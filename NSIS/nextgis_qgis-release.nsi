@@ -3,23 +3,97 @@ RequestExecutionLevel admin
 
 !include "MUI.nsh"
 !include "LogicLib.nsh"
+
+!macro IfKeyExists ROOT MAIN_KEY KEY
+push $R0
+push $R1
+ 
+!define Index 'Line${__LINE__}'
+ 
+StrCpy $R1 "0"
+ 
+"${Index}-Loop:"
+; Check for Key
+EnumRegKey $R0 ${ROOT} "${MAIN_KEY}" "$R1"
+StrCmp $R0 "" "${Index}-False"
+  IntOp $R1 $R1 + 1
+  StrCmp $R0 "${KEY}" "${Index}-True" "${Index}-Loop"
+ 
+"${Index}-True:"
+;Return 1 if found
+push "1"
+goto "${Index}-End"
+ 
+"${Index}-False:"
+;Return 0 if not found
+push "0"
+goto "${Index}-End"
+ 
+"${Index}-End:"
+!undef Index
+exch 2
+pop $R0
+pop $R1
+!macroend
+
 !define QGIS_BASE "NextGIS QGIS"
 !define DISPLAYED_NAME "NextGIS QGIS"
-!define VERSION_NUMBER "1.9.0"
-!define VERSION_NAME "master"
+!define VERSION_NUMBER "2.0.1"
+!define VERSION_NAME ""
 !define COMPLETE_NAME "${QGIS_BASE} ${VERSION_NUMBER} ${VERSION_NAME}"
 !define CHECK_INSTALL_NAME "${QGIS_BASE}"
 !define INSTALLER_DISPLAYED_NAME "${DISPLAYED_NAME}"
 !define PUBLISHER "NextGIS"
 !define WEB_SITE "http://www.nextgis.ru"
 !define WIKI_PAGE ""
+
+!define SHORTNAME "qgis"
+
 !addplugindir osgeo4w/untgz
 !addplugindir osgeo4w/nsis
 
 Name "NextGIS QGIS"
-OutFile "NextGIS-QGIS"
+OutFile "NextGIS-QGIS-release-2_0.exe"
 InstallDir "C:\NextGIS_QGIS"
 
+Function .onInit
+
+    Var /GLOBAL uninstaller_path
+    Var /GLOBAL installer_path
+    
+    !insertmacro IfKeyExists HKLM "Software" "${QGIS_BASE}"
+    Pop $R0
+       
+    ${If} $R0 = 1
+        ReadRegStr $0 HKLM "Software\${QGIS_BASE}" "VersionNumber"
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+          "${DISPLAYED_NAME} is already installed on your system. \
+          $\n$\nThe installed release is $0 \
+          $\n$\nPress `OK` to reinstall ${DISPLAYED_NAME} or Cancel to quit." \
+          IDOK uninst  IDCANCEL  quit_uninstall
+    
+            uninst:  
+                ReadRegStr $uninstaller_path HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "UninstallString"
+                ReadRegStr $installer_path HKLM "Software\${QGIS_BASE}" "InstallPath"
+                ;MessageBox MB_OK $uninstaller_path
+                ExecWait '$uninstaller_path _?=$installer_path' $0
+                ;ExecWait '$uninstaller_path' $0
+                
+                ${If} $0 = 0
+                    Goto continue_uninstall
+                ${Else}
+                    Goto quit_uninstall
+                ${EndIf}
+                
+            quit_uninstall:
+                Abort
+                
+            continue_uninstall:
+                RMDir /r "$installer_path"
+    ${EndIf}
+        
+FunctionEnd
+  
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -47,6 +121,8 @@ ShowUnInstDetails show
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
+!insertmacro MUI_LANGUAGE "Russian"
+
 Section "Quantum GIS"
 
 	SectionIn RO
@@ -61,14 +137,14 @@ Section "Quantum GIS"
 
 	SetOutPath "$INSTALL_DIR\icons"
 	File .\Installer-Files\QGIS.ico
-	File .\Installer-Files\QGIS_Web.ico
+    
 	SetOutPath "$INSTALL_DIR"
 	File .\Installer-Files\postinstall.bat
 	File .\Installer-Files\preremove.bat
 	
 	SetOutPath "$INSTALL_DIR"
-	File /r D:\builds\ng\*.*
-	
+	File /r "path_to_source_files"
+    
 	WriteUninstaller "$INSTALL_DIR\Uninstall-QGIS.exe"
 	
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "Name" "${QGIS_BASE}"
@@ -103,16 +179,16 @@ RebootNecessary:
 
 NoRebootNecessary:
         Delete "$DESKTOP\NextGIS QGIS (${VERSION_NUMBER}).lnk"
-        CreateShortCut "$DESKTOP\Quantum GIS (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+        CreateShortCut "$DESKTOP\NextGIS QGIS (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
         "$INSTALL_DIR\icons\QGIS.ico" "" SW_SHOWNORMAL "" "Launch ${COMPLETE_NAME}"
 
         Delete "$SMPROGRAMS\${QGIS_BASE}\NextGIS QGIS (${VERSION_NUMBER}).lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Quantum GIS (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\NextGIS QGIS (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
         "$INSTALL_DIR\icons\QGIS.ico" "" SW_SHOWNORMAL "" "Launch ${COMPLETE_NAME}"
 SectionEnd
 
 Section "Uninstall"
-	GetFullPathName /SHORT $0 $INSTDIR
+    GetFullPathName /SHORT $0 $INSTDIR
 	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
 	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${QGIS_BASE}").r0'
 
@@ -123,6 +199,7 @@ Section "Uninstall"
 
 	SetShellVarContext all
 	Delete "$DESKTOP\NextGIS QGIS (${VERSION_NUMBER}).lnk"
+
 	SetShellVarContext all
 	RMDir /r "$SMPROGRAMS\${QGIS_BASE}"
 
