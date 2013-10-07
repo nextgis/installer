@@ -49,11 +49,11 @@ pop $R1
 
 !define SHORTNAME "qgis-dev"
 
-!addplugindir osgeo4w/untgz
-!addplugindir osgeo4w/nsis
+!addplugindir ../osgeo4w/untgz
+!addplugindir ../osgeo4w/nsis
 
 Name "NextGIS QGIS dev"
-OutFile "NextGIS-QGIS-dev.exe"
+OutFile "NextGIS-QGIS-dev-${VERSION_NUMBER}.exe"
 InstallDir "C:\NextGIS_QGIS_DEV"
 
 Function .onInit
@@ -98,16 +98,16 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 !define MUI_ABORTWARNING
-!define MUI_ICON ".\Installer-Files\Install_QGIS.ico"
-!define MUI_UNICON ".\Installer-Files\Uninstall_QGIS.ico"
-!define MUI_HEADERIMAGE_BITMAP_NOSTETCH ".\Installer-Files\InstallHeaderImage.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP_NOSTRETCH ".\Installer-Files\UnInstallHeaderImage.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP ".\Installer-Files\WelcomeFinishPage.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\Installer-Files\UnWelcomeFinishPage.bmp"
+!define MUI_ICON "..\Installer-Files\Install_QGIS.ico"
+!define MUI_UNICON "..\Installer-Files\Uninstall_QGIS.ico"
+!define MUI_HEADERIMAGE_BITMAP_NOSTETCH "..\Installer-Files\InstallHeaderImage.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP_NOSTRETCH "..\Installer-Files\UnInstallHeaderImage.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\Installer-Files\WelcomeFinishPage.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\Installer-Files\UnWelcomeFinishPage.bmp"
 
 !define MUI_WELCOMEPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE ".\Installer-Files\LICENSE.txt"
+!insertmacro MUI_PAGE_LICENSE "..\Installer-Files\LICENSE.txt"
 
 !insertmacro MUI_PAGE_DIRECTORY
 
@@ -136,14 +136,14 @@ Section "Quantum GIS"
 	CreateDirectory "$GIS_DATABASE"
 
 	SetOutPath "$INSTALL_DIR\icons"
-	File .\Installer-Files\QGIS_dev.ico
+	File ..\Installer-Files\QGIS_dev.ico
     
 	SetOutPath "$INSTALL_DIR"
-	File .\Installer-Files\postinstall.bat
-	File .\Installer-Files\preremove.bat
+	File ..\Installer-Files\for_devel\postinstall.bat
+	File ..\Installer-Files\for_devel\preremove.bat
 	
 	SetOutPath "$INSTALL_DIR"
-	File /r "path_to_source_files"
+	File /r D:\builds\qgis-trunk-with-env\*.*
 	
 	WriteUninstaller "$INSTALL_DIR\Uninstall-QGIS.exe"
 	
@@ -185,6 +185,13 @@ NoRebootNecessary:
         Delete "$SMPROGRAMS\${QGIS_BASE}\NextGIS QGIS dev (${VERSION_NUMBER}).lnk"
         CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\NextGIS QGIS dev (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
         "$INSTALL_DIR\icons\QGIS_dev.ico" "" SW_SHOWNORMAL "" "Launch ${COMPLETE_NAME}"
+        
+        Delete "$SMPROGRAMS\${QGIS_BASE}\Удалить NextGIS QGIS dev (${VERSION_NUMBER}).lnk"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Удалить NextGIS QGIS dev (${VERSION_NUMBER}).lnk" "$INSTALL_DIR\Uninstall-QGIS.exe" "" \
+        "$INSTALL_DIR\Uninstall-QGIS.exe" "" SW_SHOWNORMAL "" "Удалить NextGIS QGIS dev (${VERSION_NUMBER})"
+        
+        Delete "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk" "$INSTALL_DIR\manual\QGIS-1.8-UserGuide-ru.pdf" "" "" "" "" "" "Открыть руководство пользователя QGIS"
 SectionEnd
 
 Section "Uninstall"
