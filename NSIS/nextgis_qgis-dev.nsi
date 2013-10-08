@@ -3,38 +3,7 @@ RequestExecutionLevel admin
 
 !include "MUI.nsh"
 !include "LogicLib.nsh"
-
-!macro IfKeyExists ROOT MAIN_KEY KEY
-push $R0
-push $R1
- 
-!define Index 'Line${__LINE__}'
- 
-StrCpy $R1 "0"
- 
-"${Index}-Loop:"
-; Check for Key
-EnumRegKey $R0 ${ROOT} "${MAIN_KEY}" "$R1"
-StrCmp $R0 "" "${Index}-False"
-  IntOp $R1 $R1 + 1
-  StrCmp $R0 "${KEY}" "${Index}-True" "${Index}-Loop"
- 
-"${Index}-True:"
-;Return 1 if found
-push "1"
-goto "${Index}-End"
- 
-"${Index}-False:"
-;Return 0 if not found
-push "0"
-goto "${Index}-End"
- 
-"${Index}-End:"
-!undef Index
-exch 2
-pop $R0
-pop $R1
-!macroend
+!include "utils.nsh"
 
 !define QGIS_BASE "NextGIS QGIS dev"
 !define DISPLAYED_NAME "NextGIS QGIS dev"
@@ -48,6 +17,8 @@ pop $R1
 !define WIKI_PAGE ""
 
 !define SHORTNAME "qgis-dev"
+
+!define SRC_DIR "D:\builds\qgis-trunk-with-env"
 
 !addplugindir ../osgeo4w/untgz
 !addplugindir ../osgeo4w/nsis
@@ -143,8 +114,10 @@ Section "Quantum GIS"
 	File ..\Installer-Files\for_devel\preremove.bat
 	
 	SetOutPath "$INSTALL_DIR"
-	File /r D:\builds\qgis-trunk-with-env\*.*
+	File /r "${SRC_DIR}\*.*"
 	
+    !include "plugins.nsh"
+    
 	WriteUninstaller "$INSTALL_DIR\Uninstall-QGIS.exe"
 	
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "Name" "${QGIS_BASE}"
@@ -163,6 +136,9 @@ Section "Quantum GIS"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "URLInfoAbout" "${WEB_SITE}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "Publisher" "${PUBLISHER}"
 	
+    WriteRegStr HKCU "Software\QGIS\QGIS2\Qgis\plugin-repos\Репозиторий NextGIS" "url" "http://nextgis.ru/programs/qgis/qgis-repo.xml"
+    WriteRegStr HKCU "Software\QGIS\QGIS2\Qgis\plugin-repos\Репозиторий NextGIS" "enabled" "true"
+    
 	SetShellVarContext current
 	SetShellVarContext all
 	CreateDirectory "$SMPROGRAMS\${QGIS_BASE}"
@@ -191,7 +167,7 @@ NoRebootNecessary:
         "$INSTALL_DIR\Uninstall-QGIS.exe" "" SW_SHOWNORMAL "" "Удалить NextGIS QGIS dev (${VERSION_NUMBER})"
         
         Delete "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk" "$INSTALL_DIR\manual\QGIS-1.8-UserGuide-ru.pdf" "" "" "" "" "" "Открыть руководство пользователя QGIS"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk" "$INSTALL_DIR\manual\qgis-1.8.0_user_guide_ru.pdf" "" "" "" "" "" "Открыть руководство пользователя QGIS"
 SectionEnd
 
 Section "Uninstall"
