@@ -12,6 +12,7 @@
 !define SHORTNAME "qgis"
 
 !define SRC_DIR "D:\builds\qgis-release-2_0-with-env"
+!define GRASS_SRC_DIR "D:\builds\osgeo4w_grass"
 
 !define QGIS_RUN_ICO_NAME "QGIS.ico"
 !define QGIS_RUN_ICO_PATH "..\Installer-Files\${QGIS_RUN_ICO_NAME}"
@@ -29,16 +30,17 @@ Name "NextGIS QGIS"
 OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-with_sr_ip.exe"
 InstallDir "C:\NextGIS_QGIS"
 
-!macro install_plugin_macro
+!macro Section_Install_Plugin
+Section "-QGIS_PLUGINS" QGIS_PLUGINS
+    SectionIn RO
+    
     !define PLUGIN_DIR "D:\builds\plugins"
-
     WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "identifyplus" "true"
     WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "simplereports" "true"
-
     SetOutPath "$INSTALL_DIR\apps\${SHORTNAME}\python\plugins\"
     File /r "${PLUGIN_DIR}\identifyplus"
     File /r "${PLUGIN_DIR}\simplereports"
+SectionEnd
 !macroend
-
 
 !include "nextgis_qgis-base.nsh"

@@ -12,6 +12,7 @@
 !define SHORTNAME "qgis-dev"
 
 !define SRC_DIR "D:\builds\qgis-trunk-with-env"
+!define GRASS_SRC_DIR "D:\builds\osgeo4w_grass"
 
 !define QGIS_RUN_ICO_NAME "QGIS_dev.ico"
 !define QGIS_RUN_ICO_PATH "..\Installer-Files\${QGIS_RUN_ICO_NAME}"
@@ -29,7 +30,7 @@ Name "NextGIS QGIS dev"
 OutFile "NextGIS-QGIS-dev-${VERSION_NUMBER}.exe"
 InstallDir "C:\NextGIS_QGIS_DEV"
 
-!macro install_plugin_macro
+!macro Section_Install_Plugin
 
 !macroend
 
