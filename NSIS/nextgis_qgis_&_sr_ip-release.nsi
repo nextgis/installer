@@ -26,11 +26,19 @@
 !define QGIS_MANUAL_FILE_NAME "qgis-1.8.0_user_guide_ru.pdf"
 
 Name "NextGIS QGIS"
-OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}.exe"
+OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-with_sr_ip.exe"
 InstallDir "C:\NextGIS_QGIS"
 
 !macro install_plugin_macro
+    !define PLUGIN_DIR "D:\builds\plugins"
 
+    WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "identifyplus" "true"
+    WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "simplereports" "true"
+
+    SetOutPath "$INSTALL_DIR\apps\${SHORTNAME}\python\plugins\"
+    File /r "${PLUGIN_DIR}\identifyplus"
+    File /r "${PLUGIN_DIR}\simplereports"
 !macroend
+
 
 !include "nextgis_qgis-base.nsh"
