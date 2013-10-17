@@ -60,6 +60,9 @@ Section "QGIS" QGIS
     SetOutPath "$INSTALL_DIR"
 	File /r "${SRC_DIR}\*.*"
     
+    SetOutPath "$INSTALL_DIR"
+	File /r "${BUILD_VERSION_FILE}"
+    
 	WriteUninstaller "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
 	
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "Name" "${QGIS_BASE}"
@@ -119,6 +122,10 @@ NoRebootNecessary:
         
         Delete "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk"
         CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "Открыть руководство пользователя QGIS"
+        
+        Delete "$SMPROGRAMS\${QGIS_BASE}\Версия сборки ${COMPLETE_NAME}.lnk"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Версия сборки ${COMPLETE_NAME}.lnk" "$INSTALL_DIR\build_version.txt" "" "" "" "" "" "Показать версию сборки ${COMPLETE_NAME}.lnk"
+        
 SectionEnd
 
 ;--------------------------------

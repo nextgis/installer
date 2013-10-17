@@ -26,6 +26,8 @@
 
 !define QGIS_MANUAL_FILE_NAME "qgis-1.8.0_user_guide_ru.pdf"
 
+!define BUILD_VERSION_FILE "..\Installer-Files\for_devel\build_version.txt"
+
 Name "NextGIS QGIS dev"
 OutFile "NextGIS-QGIS-dev-${VERSION_NUMBER}.exe"
 InstallDir "C:\NextGIS_QGIS_DEV"
