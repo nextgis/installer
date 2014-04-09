@@ -1,7 +1,8 @@
 SetCompressor /SOLID lzma
 RequestExecutionLevel admin
 
-!include "MUI.nsh"
+;!include "MUI.nsh"
+!include "MUI2.nsh"
 !include "LogicLib.nsh"
 !include "utils.nsh"
 
@@ -16,11 +17,27 @@ ShowUnInstDetails show
 !define MUI_UNICON "..\Installer-Files\Uninstall_QGIS.ico"
 !define MUI_HEADERIMAGE_BITMAP_NOSTETCH "..\Installer-Files\InstallHeaderImage.bmp"
 !define MUI_HEADERIMAGE_UNBITMAP_NOSTRETCH "..\Installer-Files\UnInstallHeaderImage.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "..\Installer-Files\WelcomeFinishPage.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\Installer-Files\UnWelcomeFinishPage.bmp"
+;!define MUI_WELCOMEFINISHPAGE_BITMAP "..\Installer-Files\WelcomeFinishPage_ru.bmp"
+;!define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\Installer-Files\UnWelcomeFinishPage_ru.bmp"
 
 !define MUI_WELCOMEPAGE_TITLE_3LINES
+
+;Show all languages, despite user's codepage
+!define MUI_LANGDLL_ALLLANGUAGES
+
+;--------------------------------
+;Language Selection Dialog Settings
+
+    ;Remember the installer language
+    !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+    !define MUI_LANGDLL_REGISTRY_KEY "Software\${QGIS_BASE}" 
+    !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+  
+;--------------------------------
+!define MUI_PAGE_CUSTOMFUNCTION_PRE wel_pre
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW wel_show
 !insertmacro MUI_PAGE_WELCOME
+
 !insertmacro MUI_PAGE_LICENSE "..\Installer-Files\LICENSE.txt"
 
 !insertmacro MUI_PAGE_DIRECTORY
@@ -30,12 +47,56 @@ ShowUnInstDetails show
 !define MUI_FINISHPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_FINISH
 
+!define MUI_PAGE_CUSTOMFUNCTION_PRE un.wel_pre
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.wel_show
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-!insertmacro MUI_LANGUAGE "Russian"
+;--------------------------------
+;Languages
+    !insertmacro MUI_LANGUAGE "English" ;first language is the default language
+    !insertmacro MUI_LANGUAGE "Russian"
+
+;--------------------------------
+
+Function wel_pre
+    ${Switch} $LANGUAGE
+    ${Case} ${LANG_ENGLISH}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\WelcomeFinishPage_en.bmp"
+        File /oname=$PLUGINSDIR\modern-un-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_en.bmp"
+    ${Break}
+    ${Case} ${LANG_RUSSIAN}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\WelcomeFinishPage_ru.bmp"
+        File /oname=$PLUGINSDIR\modern-un-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_ru.bmp"
+    ${Break}
+    ${Default}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\WelcomeFinishPage_en.bmp"
+        File /oname=$PLUGINSDIR\modern-un-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_en.bmp"
+    ${EndSwitch}
+FunctionEnd
+ 
+Function wel_show
+    ${NSD_SetImage} $mui.WelcomePage.Image $PLUGINSDIR\modern-wizard.bmp $mui.WelcomePage.Image.Bitmap
+FunctionEnd
+
+Function un.wel_pre
+    ${Switch} $LANGUAGE
+    ${Case} ${LANG_ENGLISH}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_en.bmp"
+    ${Break}
+    ${Case} ${LANG_RUSSIAN}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_ru.bmp"
+    ${Break}
+    ${Default}
+        File /oname=$PLUGINSDIR\modern-wizard.bmp "..\Installer-Files\UnWelcomeFinishPage_en.bmp"
+    ${EndSwitch}
+FunctionEnd
+ 
+Function un.wel_show
+    ${NSD_SetImage} $mui.WelcomePage.Image $PLUGINSDIR\modern-wizard.bmp $mui.WelcomePage.Image.Bitmap
+FunctionEnd
 
 ;--------------------------------
 ;Installer Sections
@@ -59,9 +120,6 @@ Section "QGIS" QGIS
 	
     SetOutPath "$INSTALL_DIR"
 	File /r "${SRC_DIR}\*.*"
-    
-    SetOutPath "$INSTALL_DIR"
-	File /r "${BUILD_VERSION_FILE}"
     
 	WriteUninstaller "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
 	
@@ -92,6 +150,23 @@ Section "GRASS" GRASS
 	File /r "${GRASS_SRC_DIR}\*.*"
 SectionEnd
 
+Section "SAGA" SAGA
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${SAGA_SRC_DIR}\*.*"
+SectionEnd
+
+;--------------------------------
+;Language strings
+LangString QGIS_MAN ${LANG_RUSSIAN} "Руководство пользователя QGIS"
+LangString QGIS_MAN ${LANG_ENGLISH} "Manual QGIS"
+LangString QGIS_MAN_HELP ${LANG_RUSSIAN} "Открыть руководство пользователя QGIS"
+LangString QGIS_MAN_HELP ${LANG_ENGLISH} "Open QGIS manual"
+LangString DEL_QGIS ${LANG_RUSSIAN} "Удалить"
+LangString DEL_QGIS ${LANG_ENGLISH} "Delete"
+LangString RUN_QGIS ${LANG_RUSSIAN} "Запустить"
+LangString RUN_QGIS ${LANG_ENGLISH} "Run"
+;--------------------------------
+
 Section "-DONE"
     SetShellVarContext current
 	SetShellVarContext all
@@ -110,21 +185,18 @@ RebootNecessary:
 NoRebootNecessary:
         Delete "$DESKTOP\${QGIS_RUN_LNK_NAME}"
         CreateShortCut "$DESKTOP\${QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "Запустить ${COMPLETE_NAME}"
+        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${COMPLETE_NAME}"
 
         Delete "$SMPROGRAMS\${QGIS_BASE}\${QGIS_RUN_LNK_NAME}"
         CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\${QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "Запустить ${COMPLETE_NAME}"
+        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${COMPLETE_NAME}"
         
-        Delete "$SMPROGRAMS\${QGIS_BASE}\${QGIS_UNINSTALL_LNK_NAME}"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\${QGIS_UNINSTALL_LNK_NAME}" "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" \
-        "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" SW_SHOWNORMAL "" "Удалить ${COMPLETE_NAME}"
+        Delete "$SMPROGRAMS\${QGIS_BASE}\$(DEL_QGIS) ${QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\$(DEL_QGIS) ${QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" \
+        "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${COMPLETE_NAME}"
         
-        Delete "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Руководство пользователя QGIS.lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "Открыть руководство пользователя QGIS"
-        
-        Delete "$SMPROGRAMS\${QGIS_BASE}\Версия сборки ${COMPLETE_NAME}.lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\Версия сборки ${COMPLETE_NAME}.lnk" "$INSTALL_DIR\build_version.txt" "" "" "" "" "" "Показать версию сборки ${COMPLETE_NAME}.lnk"
+        Delete "$SMPROGRAMS\${QGIS_BASE}\$(QGIS_MAN).lnk"
+        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
         
 SectionEnd
 
@@ -144,7 +216,9 @@ SectionEnd
 ;--------------------------------
 ;Installer Functions
 Function .onInit
-   
+    
+    !insertmacro MUI_LANGDLL_DISPLAY
+    
     Var /GLOBAL uninstaller_path
     Var /GLOBAL installer_path
     
@@ -200,3 +274,12 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\${QGIS_BASE}"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}"
 SectionEnd
+
+;--------------------------------
+;Uninstaller Functions
+
+Function un.onInit
+
+  !insertmacro MUI_UNGETLANGUAGE
+  
+FunctionEnd

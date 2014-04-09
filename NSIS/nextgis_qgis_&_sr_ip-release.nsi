@@ -11,8 +11,9 @@
 
 !define SHORTNAME "qgis"
 
-!define SRC_DIR "D:\builds\qgis-release-2_0-with-env"
+!define SRC_DIR "D:\builds\qgis-final-2_0_1-nextgis-with-env"
 !define GRASS_SRC_DIR "D:\builds\osgeo4w_grass"
+!define SAGA_SRC_DIR "D:\builds\saga"
 
 !define QGIS_RUN_ICO_NAME "QGIS.ico"
 !define QGIS_RUN_ICO_PATH "..\Installer-Files\${QGIS_RUN_ICO_NAME}"
@@ -27,7 +28,7 @@
 !define QGIS_MANUAL_FILE_NAME "qgis-1.8.0_user_guide_ru.pdf"
 
 Name "NextGIS QGIS"
-OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-with_sr_ip.exe"
+OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-bld.2-with_sr_ip.exe"
 InstallDir "C:\NextGIS_QGIS"
 
 !macro Section_Install_Plugin
