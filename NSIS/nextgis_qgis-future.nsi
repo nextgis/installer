@@ -1,7 +1,7 @@
-!define QGIS_BASE "NextGIS QGIS dev"
-!define DISPLAYED_NAME "NextGIS QGIS dev"
+!define QGIS_BASE "NextGIS QGIS future"
+!define DISPLAYED_NAME "NextGIS QGIS future"
 !define VERSION_NUMBER "2.3.0"
-!define NEXTGIS_QGIS_BUILD_NUMBER "9"
+!define NEXTGIS_QGIS_BUILD_NUMBER "10"
 !define VERSION_NAME ""
 !define COMPLETE_NAME "${QGIS_BASE} ${VERSION_NUMBER} ${VERSION_NAME}"
 !define CHECK_INSTALL_NAME "${QGIS_BASE}"
@@ -13,26 +13,26 @@
 !define SHORTNAME "qgis"
 
 !define OSGEO4W_SRC_DIR "D:\builds\osgeo4w-env"
-!define QGIS_SRC_DIR "D:\builds\qgis-master-nextgis"
+!define QGIS_SRC_DIR "D:\builds\qgis-master-future-nextgis"
 !define GRASS_SRC_DIR "D:\builds\grass-fromOSGEO4W"
 !define SAGA_SRC_DIR "D:\builds\saga-fromOSGEO4W"
-!define GDAL_SRC_DIR "D:\builds\gdal-1.10.1-fromOSGEO4W"
+!define GDAL_SRC_DIR "D:\builds\gdal-1.11.0-fromOSGEO4W"
 
 !define QGIS_RUN_ICO_NAME "QGIS_dev.ico"
 !define QGIS_RUN_ICO_PATH "..\Installer-Files\${QGIS_RUN_ICO_NAME}"
-!define QGIS_RUN_LNK_NAME "NextGIS QGIS dev (${VERSION_NUMBER}).lnk"
+!define QGIS_RUN_LNK_NAME "NextGIS QGIS future (${VERSION_NUMBER}).lnk"
 
 !define QGIS_POSTINSTALL_BAT "..\Installer-Files\for_devel\postinstall.bat"
 !define QGIS_PREREMOVE_BAT "..\Installer-Files\for_devel\preremove.bat"
 
-!define QGIS_UNINSTALL_FILE_NAME "Uninstall-NextGIS_QGIS_dev.exe"
-!define QGIS_UNINSTALL_LNK_NAME_SUFFIX "NextGIS QGIS dev (${VERSION_NUMBER})"
+!define QGIS_UNINSTALL_FILE_NAME "Uninstall-NextGIS_QGIS_future.exe"
+!define QGIS_UNINSTALL_LNK_NAME_SUFFIX "NextGIS QGIS future (${VERSION_NUMBER})"
 
 !define QGIS_MANUAL_FILE_NAME "QGIS-2.0-UserGuide-ru.pdf"
 
-Name "NextGIS QGIS dev"
+Name "${INSTALLER_DISPLAYED_NAME}"
 OutFile "NextGIS-QGIS-dev-${VERSION_NUMBER}-bld.${NEXTGIS_QGIS_BUILD_NUMBER}.exe"
-InstallDir "C:\NextGIS_QGIS_DEV"
+InstallDir "C:\NextGIS_QGIS_FUTURE"
 
 !macro Section_Install_Plugin
 

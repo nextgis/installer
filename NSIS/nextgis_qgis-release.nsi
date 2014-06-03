@@ -1,19 +1,22 @@
 !define QGIS_BASE "NextGIS QGIS"
 !define DISPLAYED_NAME "NextGIS QGIS"
 !define VERSION_NUMBER "2.2.0"
+!define NEXTGIS_QGIS_BUILD_NUMBER "6"
 !define VERSION_NAME ""
 !define COMPLETE_NAME "${QGIS_BASE} ${VERSION_NUMBER} ${VERSION_NAME}"
 !define CHECK_INSTALL_NAME "${QGIS_BASE}"
-!define INSTALLER_DISPLAYED_NAME "${DISPLAYED_NAME}"
+!define INSTALLER_DISPLAYED_NAME "${DISPLAYED_NAME}(bld.${NEXTGIS_QGIS_BUILD_NUMBER})"
 !define PUBLISHER "NextGIS"
 !define WEB_SITE "http://www.nextgis.ru"
 !define WIKI_PAGE ""
 
 !define SHORTNAME "qgis"
 
-!define SRC_DIR "D:\builds\qgis-final-2_2_0-nextgis-with-env"
-!define GRASS_SRC_DIR "D:\builds\osgeo4w_grass"
-!define SAGA_SRC_DIR "D:\builds\saga"
+!define OSGEO4W_SRC_DIR "D:\builds\osgeo4w-env"
+!define QGIS_SRC_DIR "D:\builds\qgis-final-2_2_0-nextgis"
+!define GRASS_SRC_DIR "D:\builds\grass-fromOSGEO4W"
+!define SAGA_SRC_DIR "D:\builds\saga-fromOSGEO4W"
+!define GDAL_SRC_DIR "D:\builds\gdal-1.10.0-fromOSGEO4W"
 
 !define QGIS_RUN_ICO_NAME "QGIS.ico"
 !define QGIS_RUN_ICO_PATH "..\Installer-Files\${QGIS_RUN_ICO_NAME}"
@@ -27,8 +30,8 @@
 
 !define QGIS_MANUAL_FILE_NAME "QGIS-2.0-UserGuide-ru.pdf"
 
-Name "NextGIS QGIS"
-OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-bld.6.exe"
+Name "${INSTALLER_DISPLAYED_NAME}"
+OutFile "NextGIS-QGIS-release-${VERSION_NUMBER}-bld.${NEXTGIS_QGIS_BUILD_NUMBER}.exe"
 InstallDir "C:\NextGIS_QGIS"
 
 !macro Section_Install_Plugin

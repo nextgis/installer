@@ -58,7 +58,6 @@ ShowUnInstDetails show
 ;Languages
     !insertmacro MUI_LANGUAGE "English" ;first language is the default language
     !insertmacro MUI_LANGUAGE "Russian"
-
 ;--------------------------------
 
 Function wel_pre
@@ -100,7 +99,7 @@ FunctionEnd
 
 ;--------------------------------
 ;Installer Sections
-Section "QGIS" QGIS
+Section "NextGIS_QGIS" NextGIS_QGIS
 	SectionIn RO
 	Var /GLOBAL INSTALL_DIR
 	StrCpy $INSTALL_DIR "$INSTDIR"
@@ -118,13 +117,11 @@ Section "QGIS" QGIS
 	File "${QGIS_POSTINSTALL_BAT}"
 	File "${QGIS_PREREMOVE_BAT}"
 	
-    SetOutPath "$INSTALL_DIR"
-	File /r "${SRC_DIR}\*.*"
-    
 	WriteUninstaller "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
 	
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "Name" "${QGIS_BASE}"
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "VersionNumber" "${VERSION_NUMBER}"
+    WriteRegStr HKLM "Software\${QGIS_BASE}" "BuildNumber" "${NEXTGIS_QGIS_BUILD_NUMBER}"
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "VersionName" "${VERSION_NAME}"
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "Publisher" "${PUBLISHER}"
 	WriteRegStr HKLM "Software\${QGIS_BASE}" "WebSite" "${WEB_SITE}"
@@ -133,6 +130,7 @@ Section "QGIS" QGIS
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayName" "${COMPLETE_NAME}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "UninstallString" "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayVersion" "${VERSION_NUMBER}"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "BuildNumber" "${NEXTGIS_QGIS_BUILD_NUMBER}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayIcon" "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "EstimatedSize" 1
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "HelpLink" "${WIKI_PAGE}"
@@ -145,6 +143,16 @@ SectionEnd
 
 !insertmacro Section_Install_Plugin
 
+Section "-OSGEO4W_ENV" OSGEO4W_ENV
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${OSGEO4W_SRC_DIR}\*.*"
+SectionEnd
+
+Section "-QGIS" QGIS
+    SetOutPath "$INSTALL_DIR\apps\qgis\"
+	File /r "${QGIS_SRC_DIR}\*.*"
+SectionEnd
+
 Section "GRASS" GRASS
     SetOutPath "$INSTALL_DIR\"
 	File /r "${GRASS_SRC_DIR}\*.*"
@@ -153,6 +161,11 @@ SectionEnd
 Section "SAGA" SAGA
     SetOutPath "$INSTALL_DIR\"
 	File /r "${SAGA_SRC_DIR}\*.*"
+SectionEnd
+
+Section "-GDAL" GDAL
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${GDAL_SRC_DIR}\*.*"
 SectionEnd
 
 ;--------------------------------
@@ -203,18 +216,19 @@ SectionEnd
 ;--------------------------------
 ;Descriptions
 
-;Language strings
-;LangString DESC_GRASS ${LANG_RUSSIAN} "Пакет Grass"
-;LangString DESC_QGIS ${LANG_RUSSIAN} "ГИС QGIS"
-
-;Assign language strings to sections
-;!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN 
-;    !insertmacro MUI_DESCRIPTION_TEXT ${QGIS} $(DESC_QGIS)
-;    !insertmacro MUI_DESCRIPTION_TEXT ${GRASS} $(DESC_GRASS)
-;!insertmacro MUI_FUNCTION_DESCRIPTION_END
-
 ;--------------------------------
 ;Installer Functions
+
+LangString ALREADY_INSTALL_MSG ${LANG_RUSSIAN} "\
+    ${DISPLAYED_NAME} уже установлен на вашем компьютере. \
+    $\n$\nУстановленная версия: $0 $2\
+    $\n$\nНажмите `OK` для установки ${DISPLAYED_NAME} $0 $2 или 'Отмена' для выхода."
+    
+LangString ALREADY_INSTALL_MSG ${LANG_ENGLISH} "\
+    ${DISPLAYED_NAME} is already installed on your system. \
+    $\n$\nThe installed release is $0 $2\
+    $\n$\nPress `OK` to reinstall ${DISPLAYED_NAME} $0 $2 or 'Cancel' to quit."
+    
 Function .onInit
     
     !insertmacro MUI_LANGDLL_DISPLAY
@@ -227,10 +241,18 @@ Function .onInit
        
     ${If} $R0 = 1
         ReadRegStr $0 HKLM "Software\${QGIS_BASE}" "VersionNumber"
+        
+        ;read build number info
+        ReadRegStr $1 HKLM "Software\${QGIS_BASE}" "BuildNumber"
+        
+        StrCmp $1 "" 0 +3
+          StrCpy $2 ""
+          Goto +2
+          StrCpy $2 "(bld. $1)"
+        
+            
         MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-          "${DISPLAYED_NAME} is already installed on your system. \
-          $\n$\nThe installed release is $0 \
-          $\n$\nPress `OK` to reinstall ${DISPLAYED_NAME} or Cancel to quit." \
+          $(ALREADY_INSTALL_MSG) \
           IDOK uninst  IDCANCEL  quit_uninstall
     
             uninst:  
