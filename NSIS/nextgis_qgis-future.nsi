@@ -31,7 +31,7 @@
 !define QGIS_MANUAL_FILE_NAME "QGIS-2.0-UserGuide-ru.pdf"
 
 Name "${INSTALLER_DISPLAYED_NAME}"
-OutFile "NextGIS-QGIS-dev-${VERSION_NUMBER}-bld.${NEXTGIS_QGIS_BUILD_NUMBER}.exe"
+OutFile "NextGIS-QGIS-future-${VERSION_NUMBER}-bld.${NEXTGIS_QGIS_BUILD_NUMBER}.exe"
 InstallDir "C:\NextGIS_QGIS_FUTURE"
 
 !macro Section_Install_Plugin

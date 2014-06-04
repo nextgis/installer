@@ -151,6 +151,9 @@ SectionEnd
 Section "-QGIS" QGIS
     SetOutPath "$INSTALL_DIR\apps\qgis\"
 	File /r "${QGIS_SRC_DIR}\*.*"
+    
+    SetOutPath "$INSTALL_DIR\bin\"
+	File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
 SectionEnd
 
 Section "GRASS" GRASS
