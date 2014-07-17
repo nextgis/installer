@@ -1,0 +1,85 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6b1eb34..d7d43f2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -609,7 +609,7 @@ LINK_DIRECTORIES(${CMAKE_BINARY_DIR}/src/core ${CMAKE_BINARY_DIR}/src/gui)
+ # create qgsversion.h
+ FIND_FILE(GIT_MARKER index PATHS ${CMAKE_SOURCE_DIR}/.git)
+ IF (GIT_MARKER)
+-  FIND_PROGRAM(GITCOMMAND git PATHS c:/cygwin/bin)
++  FIND_PROGRAM(GITCOMMAND git PATHS c:/Progra~1/Git/bin)
+   IF(GITCOMMAND)
+     IF(MSVC)
+       ADD_CUSTOM_COMMAND(
+diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
+index 0d9fadb..cc618aa 100644
+--- a/src/app/qgisapp.cpp
++++ b/src/app/qgisapp.cpp
+@@ -328,6 +328,7 @@ class QTreeWidgetItem;
+ const int BEFORE_RECENT_PATHS = 123;
+ const int AFTER_RECENT_PATHS = 321;
+ 
++const int NEXTGIS_QGIS_BUILD_NUMBER = 12;
+ /** set the application title bar text
+ 
+   If the current project title is null
+@@ -340,7 +341,8 @@ const int AFTER_RECENT_PATHS = 321;
+   */
+ static void setTitleBarText_( QWidget & qgisApp )
+ {
+-  QString caption = QgisApp::tr( "QGIS " );
++  QString caption = QgisApp::tr( "NextGIS QGIS dev" );
++  caption += QString(" - ");
+ 
+   if ( QString( QGis::QGIS_VERSION ).endsWith( "Master" ) )
+   {
+@@ -368,7 +370,8 @@ static void setTitleBarText_( QWidget & qgisApp )
+   {
+     caption += " - " + QgsProject::instance()->title();
+   }
+-
++  
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
+   qgisApp.setWindowTitle( caption );
+ } // setTitleBarText_( QWidget * qgisApp )
+ 
+@@ -703,7 +706,8 @@ QgisApp::QgisApp( QSplashScreen *splash, bool restorePlugins, QWidget * parent,
+   connect( QgsMapLayerActionRegistry::instance(), SIGNAL( changed() ), this, SLOT( refreshActionFeatureAction() ) );
+ 
+   // set application's caption
+-  QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
++  QString caption = tr( "NextGIS QGIS dev - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
+   setWindowTitle( caption );
+ 
+   QgsMessageLog::logMessage( tr( "QGIS starting..." ), QString::null, QgsMessageLog::INFO );
+diff --git a/src/app/qgscustomization.cpp b/src/app/qgscustomization.cpp
+index 460d8e4..38b1c0e 100644
+--- a/src/app/qgscustomization.cpp
++++ b/src/app/qgscustomization.cpp
+@@ -652,6 +652,25 @@ void QgsCustomization::updateMainWindow( QMenu * theToolBarMenu )
+   QMainWindow* mw = QgisApp::instance();
+   QMenuBar* menubar = mw->menuBar();
+ 
++  // hide Panels
++  mSettings->beginGroup( "Customization/Panels" );
++  foreach ( QObject* obj, mw->children() )
++  {
++    if ( obj->inherits( "QDockWidget" ) )
++    {
++      QDockWidget* bdw = qobject_cast<QDockWidget*>( obj );
++      bool visible = mSettings->value( bdw->objectName(), true ).toBool();
++    
++      if ( !visible )
++      {
++          mw->removeDockWidget(bdw);
++          QgisApp::instance()->panelMenu()->removeAction( bdw->toggleViewAction() );
++      }
++    }
++  }
++
++  mSettings->endGroup();
++
+   mSettings->beginGroup( "Customization/Menus" );
+ 
+   // hide menus and menu actions

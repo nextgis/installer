@@ -1,0 +1,235 @@
+diff --git a/i18n/qgis_ru.ts b/i18n/qgis_ru.ts
+index 8f9bbc2..4a0fd5c 100644
+--- a/i18n/qgis_ru.ts
++++ b/i18n/qgis_ru.ts
+@@ -76603,4 +76603,26 @@ Convert a string into Qt data type.
+         <translation>...</translation>
+     </message>
+ </context>
++<context>
++    <name>QgisApp</name>
++    <message>
++        <source>Target monitoring system of regional ecosystem</source>
++        <translation>Целевая система мониторинга региональной экосистемы</translation>
++    </message>
++</context>
++<context>
++    <name>QgsAbout</name>
++    <message>
++        <source>RIAS RKD</source>
++        <translation>РИАС РКД</translation>
++    </message>
++    <message>
++        <source>TMSforRES</source>
++        <translation>ЦСМ РЭС</translation>
++    </message>
++    <message>
++        <source>Core description</source>
++        <translation>Описание ядра</translation>
++    </message>
++</context>
+ </TS>
+diff --git a/src/app/main.cpp b/src/app/main.cpp
+index 3220506..4514693 100644
+--- a/src/app/main.cpp
++++ b/src/app/main.cpp
+@@ -478,6 +478,7 @@ int main( int argc, char *argv[] )
+   QString pythonfile;
+ 
+   QString customizationfile;
++  QString myWorkspace;
+ 
+ #if defined(ANDROID)
+   QgsDebugMsg( QString( "Android: All params stripped" ) );// Param %1" ).arg( argv[0] ) );
+@@ -560,6 +561,10 @@ int main( int argc, char *argv[] )
+       {
+         myRestoreDefaultWindowState = true;
+       }
++	  else if ( arg == "--workspace")
++      {
++        myWorkspace = QDir::toNativeSeparators( QDir( args[++i] ).absolutePath() );;
++      }
+       else
+       {
+         myFileList.append( QDir::toNativeSeparators( QFileInfo( args[i] ).absoluteFilePath() ) );
+@@ -688,6 +693,8 @@ int main( int argc, char *argv[] )
+     }
+   }
+ 
++  // set workspace
++  mySettings.setValue("/UI/lastProjectDir", myWorkspace);
+ 
+   // custom environment variables
+   QMap<QString, QString> systemEnvVars = QgsApplication::systemEnvVars();
+diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
+index defcf10..3e07f47 100644
+--- a/src/app/qgisapp.cpp
++++ b/src/app/qgisapp.cpp
+@@ -340,6 +340,7 @@ const int AFTER_RECENT_PATHS = 321;
+   */
+ static void setTitleBarText_( QWidget & qgisApp )
+ {
++  /*
+   QString caption = QgisApp::tr( "QGIS " );
+ 
+   if ( QString( QGis::QGIS_VERSION ).endsWith( "Master" ) )
+@@ -368,7 +369,8 @@ static void setTitleBarText_( QWidget & qgisApp )
+   {
+     caption += " - " + QgsProject::instance()->title();
+   }
+-
++  */
++  QString caption = QgisApp::tr( "Target monitoring system of regional ecosystem" );
+   qgisApp.setWindowTitle( caption );
+ } // setTitleBarText_( QWidget * qgisApp )
+ 
+@@ -703,7 +705,10 @@ QgisApp::QgisApp( QSplashScreen *splash, bool restorePlugins, QWidget * parent,
+   connect( QgsMapLayerActionRegistry::instance(), SIGNAL( changed() ), this, SLOT( refreshActionFeatureAction() ) );
+ 
+   // set application's caption
++  /*
+   QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
++  */
++  QString caption = QgisApp::tr( "Target monitoring system of regional ecosystem" );
+   setWindowTitle( caption );
+ 
+   QgsMessageLog::logMessage( tr( "QGIS starting..." ), QString::null, QgsMessageLog::INFO );
+diff --git a/src/app/qgsabout.cpp b/src/app/qgsabout.cpp
+index 1ff924a..8c9f7aa 100644
+--- a/src/app/qgsabout.cpp
++++ b/src/app/qgsabout.cpp
+@@ -38,6 +38,57 @@ QgsAbout::QgsAbout( QWidget *parent )
+ #endif
+ {
+   setupUi( this );
++
++  QSettings qgisSettings;
++
++  TextLabel4->setText(TextLabel4->text() + " (build for Rekod, version 0.0.8) ");
++
++  // RAIS RKD about -------------------------
++  const QString RAIS_RKD_About_FileName(QgsApplication::recodAboutFilesPath() + "/RIAS_RKD_About");
++
++  QFile RIASRKDFile( RAIS_RKD_About_FileName );
++
++  QString riasrkdHTML = "";
++  if ( RIASRKDFile.open( QIODevice::ReadOnly ) )
++  {
++	
++    QTextStream translatorStream( &RIASRKDFile );
++    translatorStream.setCodec( "UTF-8" );
++    while ( !translatorStream.atEnd() )
++    {
++      riasrkdHTML += translatorStream.readLine();
++    }
++  }
++  else
++  {
++	riasrkdHTML += "<h1>" + RAIS_RKD_About_FileName + " not found </h1>";
++  }
++  RAIS_RKD_About_tb->setHtml( riasrkdHTML );
++  // -----------------------------------
++
++  // TMS about -------------------------  
++  const QString TMS_About_FileName(QgsApplication::recodAboutFilesPath() + "/TMSforRES_About");
++  
++  QFile TMSFile( TMS_About_FileName );
++
++  QString TMSHTML = "";
++  if ( TMSFile.open( QIODevice::ReadOnly ) )
++  {
++	
++    QTextStream translatorStream( &TMSFile );
++    translatorStream.setCodec( "UTF-8" );
++    while ( !translatorStream.atEnd() )
++    {
++      TMSHTML += translatorStream.readLine();
++    }
++  }
++  else
++  {
++	TMSHTML += "<h1>" + TMS_About_FileName + " not found </h1>";
++  }
++  TMS_About_tb->setHtml( TMSHTML );
++  // -----------------------------------
++
+   QString title = QString( "%1 - %2 Bit" ).arg( windowTitle() ).arg( QSysInfo::WordSize );
+   initOptionsBase( true, title );
+   init();
+diff --git a/src/app/qgscustomization.cpp b/src/app/qgscustomization.cpp
+index 460d8e4..f25840d 100644
+--- a/src/app/qgscustomization.cpp
++++ b/src/app/qgscustomization.cpp
+@@ -652,6 +652,25 @@ void QgsCustomization::updateMainWindow( QMenu * theToolBarMenu )
+   QMainWindow* mw = QgisApp::instance();
+   QMenuBar* menubar = mw->menuBar();
+ 
++  // hide Panels
++  mSettings->beginGroup( "Customization/Panels" );
++  foreach ( QObject* obj, mw->children() )
++  {
++    if ( obj->inherits( "QDockWidget" ) )
++    {
++	  QDockWidget* bdw = qobject_cast<QDockWidget*>( obj );
++	  bool visible = mSettings->value( bdw->objectName(), true ).toBool();
++	
++      if ( !visible )
++      {
++		  mw->removeDockWidget(bdw);
++		  QgisApp::instance()->panelMenu()->removeAction( bdw->toggleViewAction() );
++      }
++    }
++  }
++
++  mSettings->endGroup();
++
+   mSettings->beginGroup( "Customization/Menus" );
+ 
+   // hide menus and menu actions
+diff --git a/src/core/qgsapplication.cpp b/src/core/qgsapplication.cpp
+index 1517824..a8c033e 100644
+--- a/src/core/qgsapplication.cpp
++++ b/src/core/qgsapplication.cpp
+@@ -458,6 +458,14 @@ const QString QgsApplication::licenceFilePath()
+ }
+ 
+ /*!
++  Returns the path to the Recod doc files.
++*/
++const QString QgsApplication::recodAboutFilesPath()
++{
++  return ABISYM( mPkgDataPath ) + QString( "/doc/Rekod" );
++}
++
++/*!
+   Returns the path to the help application.
+ */
+ const QString QgsApplication::helpAppPath()
+diff --git a/src/core/qgsapplication.h b/src/core/qgsapplication.h
+index c4b4676..6fe8537 100644
+--- a/src/core/qgsapplication.h
++++ b/src/core/qgsapplication.h
+@@ -105,6 +105,11 @@ class CORE_EXPORT QgsApplication : public QApplication
+     */
+     static const QString licenceFilePath();
+ 
++	/*!
++	  Returns the path to the Recod doc files.
++	*/
++	static const QString recodAboutFilesPath();
++
+     //! Returns the path to the help application.
+     static const QString helpAppPath();
+ 
+diff --git a/images/images.qrc b/images/images.qrc
+index 39e3172..2f55688 100644
+--- a/images/images.qrc
++++ b/images/images.qrc
+@@ -473,4 +473,7 @@
+         <file>sponsors/platinum.png</file>
+         <file>sponsors/silver.png</file>
+     </qresource>
++    <qresource prefix="/images/rekod_tms_4_doc">
++        <file alias="TMSforRES.jpg">rekod_tms_4_doc/TMSforRES.jpg</file>
++    </qresource>
+ </RCC>

@@ -1,65 +1,76 @@
 SetCompressor /SOLID lzma
 RequestExecutionLevel admin
 
-;!include "MUI.nsh"
+Name "${PROGRAM_NAME}"
+OutFile "${INSTALLER_NAME}"
+InstallDir "${DEFAULT_INSTALL_DIR}"
+
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
 !include "utils.nsh"
 
-!addplugindir ../osgeo4w/untgz
 !addplugindir ../osgeo4w/nsis
 
 ShowInstDetails show
 ShowUnInstDetails show
 
 !define MUI_ABORTWARNING
+
+;---- Only for NextGIS QGIS, NextGIS QGIS dev, NextGIS QGIS future --------------------
 !define MUI_ICON "..\Installer-Files\Install_QGIS.ico"
 !define MUI_UNICON "..\Installer-Files\Uninstall_QGIS.ico"
 !define MUI_HEADERIMAGE_BITMAP_NOSTETCH "..\Installer-Files\InstallHeaderImage.bmp"
 !define MUI_HEADERIMAGE_UNBITMAP_NOSTRETCH "..\Installer-Files\UnInstallHeaderImage.bmp"
-;!define MUI_WELCOMEFINISHPAGE_BITMAP "..\Installer-Files\WelcomeFinishPage_ru.bmp"
-;!define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\Installer-Files\UnWelcomeFinishPage_ru.bmp"
 
 !define MUI_WELCOMEPAGE_TITLE_3LINES
 
+;--------------------------------
 ;Show all languages, despite user's codepage
 !define MUI_LANGDLL_ALLLANGUAGES
 
 ;--------------------------------
-;Language Selection Dialog Settings
+;Remember the installer language
+!define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+!define MUI_LANGDLL_REGISTRY_KEY "Software\${PROGRAM_NAME}" 
+!define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
-    ;Remember the installer language
-    !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-    !define MUI_LANGDLL_REGISTRY_KEY "Software\${QGIS_BASE}" 
-    !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
-  
 ;--------------------------------
+; Dependence Welcome pages images from language
 !define MUI_PAGE_CUSTOMFUNCTION_PRE wel_pre
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW wel_show
+
 !insertmacro MUI_PAGE_WELCOME
-
 !insertmacro MUI_PAGE_LICENSE "..\Installer-Files\LICENSE.txt"
-
 !insertmacro MUI_PAGE_DIRECTORY
-
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_FINISH
 
+;--------------------------------
+; Dependence Welcome pages images from language
 !define MUI_PAGE_CUSTOMFUNCTION_PRE un.wel_pre
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW un.wel_show
+
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
 ;--------------------------------
-;Languages
+;Available Languages
     !insertmacro MUI_LANGUAGE "English" ;first language is the default language
     !insertmacro MUI_LANGUAGE "Russian"
-;--------------------------------
 
+;--------------------------------
+;Reserve Files
+  
+  ;If you are using solid compression, files that are required before
+  ;the actual installation should be stored first in the data block,
+  ;because this will make your installer start faster.
+  
+  !insertmacro MUI_RESERVEFILE_LANGDLL
+  
 Function wel_pre
     ${Switch} $LANGUAGE
     ${Case} ${LANG_ENGLISH}
@@ -106,55 +117,64 @@ Section "NextGIS_QGIS" NextGIS_QGIS
 	
 	SetOverwrite try
 	SetShellVarContext current
-	Var /GLOBAL GIS_DATABASE
-	StrCpy $GIS_DATABASE "$DOCUMENTS\GIS DataBase"
-	CreateDirectory "$GIS_DATABASE"
 
 	SetOutPath "$INSTALL_DIR\icons"
-	File "${QGIS_RUN_ICO_PATH}"
-    
+	File "${NextGIS_QGIS_RUN_LNK_ICO_Path}"
+
 	SetOutPath "$INSTALL_DIR"
 	File "${QGIS_POSTINSTALL_BAT}"
 	File "${QGIS_PREREMOVE_BAT}"
 	
-	WriteUninstaller "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
+	WriteUninstaller "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}"
 	
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "Name" "${QGIS_BASE}"
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "VersionNumber" "${VERSION_NUMBER}"
-    WriteRegStr HKLM "Software\${QGIS_BASE}" "BuildNumber" "${NEXTGIS_QGIS_BUILD_NUMBER}"
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "VersionName" "${VERSION_NAME}"
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "Publisher" "${PUBLISHER}"
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "WebSite" "${WEB_SITE}"
-	WriteRegStr HKLM "Software\${QGIS_BASE}" "InstallPath" "$INSTALL_DIR"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "Name" "${PROGRAM_NAME}"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "VersionNumber" "${PROGRAM_VERSION}"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "Publisher" "${PUBLISHER}"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "WebSite" "${WEB_SITE}"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "InstallPath" "$INSTALL_DIR"
 	
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayName" "${COMPLETE_NAME}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "UninstallString" "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayVersion" "${VERSION_NUMBER}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "BuildNumber" "${NEXTGIS_QGIS_BUILD_NUMBER}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "DisplayIcon" "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "EstimatedSize" 1
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "HelpLink" "${WIKI_PAGE}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "URLInfoAbout" "${WEB_SITE}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "Publisher" "${PUBLISHER}"
-	
-    WriteRegStr HKCU "Software\QGIS\QGIS2\Qgis\plugin-repos\Репозиторий NextGIS" "url" "http://nextgis.ru/programs/qgis/qgis-repo.xml"
-    WriteRegStr HKCU "Software\QGIS\QGIS2\Qgis\plugin-repos\Репозиторий NextGIS" "enabled" "true"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayName" "${PROGRAM_NAME}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "UninstallString" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayVersion" "${PROGRAM_VERSION}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayIcon" "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "EstimatedSize" 1
+	;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "HelpLink" "${WIKI_PAGE}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "URLInfoAbout" "${WEB_SITE}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "Publisher" "${PUBLISHER}"
 SectionEnd
-
-!insertmacro Section_Install_Plugin
 
 Section "-OSGEO4W_ENV" OSGEO4W_ENV
     SetOutPath "$INSTALL_DIR\"
-	File /r "${OSGEO4W_SRC_DIR}\*.*"
+    File /r "${OSGEO4W_SRC_DIR}\*.*"
 SectionEnd
 
 Section "-QGIS" QGIS
     SetOutPath "$INSTALL_DIR\apps\qgis\"
-	File /r "${QGIS_SRC_DIR}\*.*"
+    File /r "${QGIS_SRC_DIR}\*.*"
     
     SetOutPath "$INSTALL_DIR\bin\"
-	File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
+    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
 SectionEnd
+
+Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
+    SetOutPath "$INSTALL_DIR\defalut_options"
+    File /r "${QGIS_DEFAULT_OPTIONS_PATH}\*"
+    
+    SetOutPath "$INSTALL_DIR\bin"
+    File /r "${QGIS_RUN_BAT}"
+    File /r "${QGIS_PRE_RUN_BAT}"
+    File /r "..\qgis_preruner.py"
+    
+    SetOutPath "$INSTALL_DIR"
+    File /r "..\nextgis_qgis.ini"
+SectionEnd
+
+!ifdef ${PLUGINS}
+    Section "-QGIS_PLUGINS" QGIS_PLUGINS  
+        SetOutPath "$INSTALL_DIR\apps\${SHORTNAME}\python\plugins\"
+        File /r ${PLUGINS}
+    SectionEnd
+!endif
 
 Section "GRASS" GRASS
     SetOutPath "$INSTALL_DIR\"
@@ -181,15 +201,17 @@ LangString DEL_QGIS ${LANG_RUSSIAN} "Удалить"
 LangString DEL_QGIS ${LANG_ENGLISH} "Delete"
 LangString RUN_QGIS ${LANG_RUSSIAN} "Запустить"
 LangString RUN_QGIS ${LANG_ENGLISH} "Run"
+LangString SET_DEFAULT_SETTINGS ${LANG_RUSSIAN} "Установить настройки по-умолчанию"
+LangString SET_DEFAULT_SETTINGS ${LANG_ENGLISH} "Set default settings"
 ;--------------------------------
 
 Section "-DONE"
     SetShellVarContext current
 	SetShellVarContext all
-	CreateDirectory "$SMPROGRAMS\${QGIS_BASE}"
+	CreateDirectory "$SMPROGRAMS\${PROGRAM_NAME}"
 	GetFullPathName /SHORT $0 $INSTALL_DIR
 	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
-	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${QGIS_BASE}").r0'
+	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${PROGRAM_NAME}").r0'
     
     ReadEnvStr $0 COMSPEC
 	nsExec::ExecToLog '"$0" /c "$INSTALL_DIR\postinstall.bat"'
@@ -199,71 +221,66 @@ RebootNecessary:
 	SetRebootFlag true
 
 NoRebootNecessary:
-        Delete "$DESKTOP\${QGIS_RUN_LNK_NAME}"
-        CreateShortCut "$DESKTOP\${QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${COMPLETE_NAME}"
+        Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}"
+        CreateShortCut "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
 
-        Delete "$SMPROGRAMS\${QGIS_BASE}\${QGIS_RUN_LNK_NAME}"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\${QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${QGIS_RUN_ICO_NAME}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${COMPLETE_NAME}"
+        Delete "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}"
+        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
         
-        Delete "$SMPROGRAMS\${QGIS_BASE}\$(DEL_QGIS) ${QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\$(DEL_QGIS) ${QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" \
-        "$INSTALL_DIR\${QGIS_UNINSTALL_FILE_NAME}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${COMPLETE_NAME}"
+        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk"
+        CreateShortCut \
+        "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk" \
+        "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}_preruner.bat"' \
+        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
+        "" \
+        SW_SHOWNORMAL \
+        "" \
+        "$(SET_DEFAULT_SETTINGS)"
         
-        Delete "$SMPROGRAMS\${QGIS_BASE}\$(QGIS_MAN).lnk"
-        CreateShortCut "$SMPROGRAMS\${QGIS_BASE}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
+        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \
+        "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${PROGRAM_NAME}"
         
+        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk"
+        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
 SectionEnd
 
 ;--------------------------------
-;Descriptions
-
-;--------------------------------
 ;Installer Functions
-
 LangString ALREADY_INSTALL_MSG ${LANG_RUSSIAN} "\
-    ${DISPLAYED_NAME} уже установлен на вашем компьютере. \
-    $\n$\nУстановленная версия: $0 $2\
-    $\n$\nНажмите `OK` для установки ${DISPLAYED_NAME} $0 $2 или 'Отмена' для выхода."
+    ${PROGRAM_NAME} уже установлен на вашем компьютере. \
+    $\n$\nУстановленная версия: $0\
+    $\n$\nНажмите `OK` для удаления ${PROGRAM_NAME} ($0) и установки ${PROGRAM_NAME} (${PROGRAM_VERSION}) или 'Отмена' для выхода."
     
 LangString ALREADY_INSTALL_MSG ${LANG_ENGLISH} "\
-    ${DISPLAYED_NAME} is already installed on your system. \
-    $\n$\nThe installed release is $0 $2\
-    $\n$\nPress `OK` to reinstall ${DISPLAYED_NAME} $0 $2 or 'Cancel' to quit."
+    ${PROGRAM_NAME} is already installed on your system. \
+    $\n$\nThe installed version is $0\
+    $\n$\nPress `OK` to delete ${PROGRAM_NAME} ($0) and reinstall ${PROGRAM_NAME} (${PROGRAM_VERSION}) or 'Cancel' to quit."
     
 Function .onInit
-    
     !insertmacro MUI_LANGDLL_DISPLAY
     
     Var /GLOBAL uninstaller_path
     Var /GLOBAL installer_path
     
-    !insertmacro IfKeyExists HKLM "Software" "${QGIS_BASE}"
+    !insertmacro IfKeyExists HKLM "Software" "${PROGRAM_NAME}"
     Pop $R0
        
     ${If} $R0 = 1
-        ReadRegStr $0 HKLM "Software\${QGIS_BASE}" "VersionNumber"
-        
-        ;read build number info
-        ReadRegStr $1 HKLM "Software\${QGIS_BASE}" "BuildNumber"
-        
-        StrCmp $1 "" 0 +3
-          StrCpy $2 ""
-          Goto +2
-          StrCpy $2 "(bld. $1)"
-        
+        ReadRegStr $0 HKLM "Software\${PROGRAM_NAME}" "VersionNumber"
             
         MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
           $(ALREADY_INSTALL_MSG) \
           IDOK uninst  IDCANCEL  quit_uninstall
     
             uninst:  
-                ReadRegStr $uninstaller_path HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}" "UninstallString"
-                ReadRegStr $installer_path HKLM "Software\${QGIS_BASE}" "InstallPath"
-                ExecWait '$uninstaller_path _?=$installer_path' $0
+                ReadRegStr $uninstaller_path HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "UninstallString"
+                ReadRegStr $installer_path HKLM "Software\${PROGRAM_NAME}" "InstallPath"
+                ExecWait '$uninstaller_path _?=$installer_path' $1
                 
-                ${If} $0 = 0
+                ${If} $1 = 0
                     Goto continue_uninstall
                 ${Else}
                     Goto quit_uninstall
@@ -275,7 +292,6 @@ Function .onInit
             continue_uninstall:
                 RMDir /r "$installer_path"
     ${EndIf}
-        
 FunctionEnd
 
 ;--------------------------------
@@ -283,7 +299,7 @@ FunctionEnd
 Section "Uninstall"
 	GetFullPathName /SHORT $0 $INSTDIR
 	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
-	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${QGIS_BASE}").r0'
+	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${PROGRAM_NAME}").r0'
 
 	ReadEnvStr $0 COMSPEC
 	nsExec::ExecToLog '"$0" /c "$INSTALL_DIR\preremove.bat"'
@@ -291,20 +307,17 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR"
 
 	SetShellVarContext all
-	Delete "$DESKTOP\${QGIS_RUN_LNK_NAME}"
+	Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}"
     
 	SetShellVarContext all
-	RMDir /r "$SMPROGRAMS\${QGIS_BASE}"
+	RMDir /r "$SMPROGRAMS\${PROGRAM_NAME}"
 
-	DeleteRegKey HKLM "Software\${QGIS_BASE}"
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${QGIS_BASE}"
+	DeleteRegKey HKLM "Software\${PROGRAM_NAME}"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}"
 SectionEnd
 
 ;--------------------------------
 ;Uninstaller Functions
-
 Function un.onInit
-
   !insertmacro MUI_UNGETLANGUAGE
-  
 FunctionEnd

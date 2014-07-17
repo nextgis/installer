@@ -1,0 +1,83 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ae2fa33..f6d6180 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -597,7 +597,7 @@ LINK_DIRECTORIES(${CMAKE_BINARY_DIR}/src/core ${CMAKE_BINARY_DIR}/src/gui)
+ # create qgsversion.h
+ FIND_FILE(GIT_MARKER index PATHS ${CMAKE_SOURCE_DIR}/.git)
+ IF (GIT_MARKER)
+-  FIND_PROGRAM(GITCOMMAND git PATHS c:/Progra~1/Git/bin)
++  FIND_PROGRAM(GITCOMMAND git PATHS c:/cygwin/bin)
+   IF(GITCOMMAND)
+     IF(MSVC)
+       ADD_CUSTOM_COMMAND(
+diff --git a/images/icons/qgis-icon-16x16.png b/images/icons/qgis-icon-16x16.png
+index 8075f07..2fe7f2e 100644
+Binary files a/images/icons/qgis-icon-16x16.png and b/images/icons/qgis-icon-16x16.png differ
+diff --git a/images/icons/qgis-icon-60x60.png b/images/icons/qgis-icon-60x60.png
+index 75b551d..a21665c 100644
+Binary files a/images/icons/qgis-icon-60x60.png and b/images/icons/qgis-icon-60x60.png differ
+diff --git a/images/splash/splash.png b/images/splash/splash.png
+index 31b0410..67985c7 100644
+Binary files a/images/splash/splash.png and b/images/splash/splash.png differ
+diff --git a/src/app/qgis.ico b/src/app/qgis.ico
+index 6532694..87d76d1 100644
+Binary files a/src/app/qgis.ico and b/src/app/qgis.ico differ
+diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
+index b87e49b..5be9d52 100644
+--- a/src/app/qgisapp.cpp
++++ b/src/app/qgisapp.cpp
+@@ -328,7 +328,6 @@ class QTreeWidgetItem;
+ const int BEFORE_RECENT_PATHS = 123;
+ const int AFTER_RECENT_PATHS = 321;
+ 
+-const int NEXTGIS_QGIS_BUILD_NUMBER = 10;
+ /** set the application title bar text
+ 
+   If the current project title is null
+@@ -341,8 +340,7 @@ const int NEXTGIS_QGIS_BUILD_NUMBER = 10;
+   */
+ static void setTitleBarText_( QWidget & qgisApp )
+ {
+-  QString caption = QgisApp::tr( "NextGIS QGIS future" );
+-  caption += QString(" - ");
++  QString caption = QgisApp::tr( "QGIS " );
+ 
+   if ( QString( QGis::QGIS_VERSION ).endsWith( "Master" ) )
+   {
+@@ -370,8 +368,7 @@ static void setTitleBarText_( QWidget & qgisApp )
+   {
+     caption += " - " + QgsProject::instance()->title();
+   }
+-  
+-  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
++
+   qgisApp.setWindowTitle( caption );
+ } // setTitleBarText_( QWidget * qgisApp )
+ 
+@@ -706,8 +703,7 @@ QgisApp::QgisApp( QSplashScreen *splash, bool restorePlugins, QWidget * parent,
+   connect( QgsMapLayerActionRegistry::instance(), SIGNAL( changed() ), this, SLOT( refreshActionFeatureAction() ) );
+ 
+   // set application's caption
+-  QString caption = tr( "NextGIS QGIS future - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
+-  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
++  QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
+   setWindowTitle( caption );
+ 
+   QgsMessageLog::logMessage( tr( "QGIS starting..." ), QString::null, QgsMessageLog::INFO );
+diff --git a/src/providers/ogr/qgsogrprovider.cpp b/src/providers/ogr/qgsogrprovider.cpp
+index 0dcc1a2..feb31b7 100644
+--- a/src/providers/ogr/qgsogrprovider.cpp
++++ b/src/providers/ogr/qgsogrprovider.cpp
+@@ -1840,11 +1840,6 @@ QString createFilters( QString type )
+         myFileFilters += createFileFilter_( QObject::tr( "AutoCAD DXF" ), "*.dxf" );
+         myExtensions << "dxf";
+       }
+-	  else if ( driverName.startsWith( "SXF" ) )
+-      {
+-        myFileFilters += createFileFilter_( QObject::tr( "Panorama SXF" ), "*.sxf" );
+-        myExtensions << "sxf";
+-      }
+       else
+       {
+         // NOP, we don't know anything about the current driver

@@ -35,15 +35,17 @@ OutFile "NextGIS-QGIS-test-${VERSION_NUMBER}-bld.${NEXTGIS_QGIS_BUILD_NUMBER}.ex
 InstallDir "C:\NextGIS_QGIS_TEST"
 
 !macro Section_Install_Plugin
-Section "-QGIS_PLUGINS" QGIS_PLUGINS
-    SectionIn RO
-    
-    !define PLUGIN_DIR "D:\builds\plugins"
-    WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "identifyplus" "true"
-    WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "simplereports" "true"
-    SetOutPath "$INSTALL_DIR\apps\${SHORTNAME}\python\plugins\"
-    File /r "${PLUGIN_DIR}\identifyplus"
-    File /r "${PLUGIN_DIR}\simplereports"
+Function qweewejdc
+        WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "identifyplus" "false"
+        WriteRegStr HKEY_CURRENT_USER "Software\QGIS\QGIS2\PythonPlugins" "simplereports" "false"
+FunctionEnd
+
+Section "-QGIS_PLUGINS" QGIS_PLUGINS   
+    SetOutPath "$INSTALL_DIR\apps\qgis\python\plugins\"
+    !define PLUGINS "'d:\builds\plugins\identifyplus' 'd:\builds\plugins\simplereports' "
+    File /r ${PLUGINS}
+    Call qweewejdc
+
 SectionEnd
 !macroend
 

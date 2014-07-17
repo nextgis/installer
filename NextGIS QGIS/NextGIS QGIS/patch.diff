@@ -1,0 +1,65 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4e76c16..ece00c1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -601,7 +601,7 @@ LINK_DIRECTORIES(${CMAKE_BINARY_DIR}/src/core ${CMAKE_BINARY_DIR}/src/gui)
+ # create qgsversion.h
+ FIND_FILE(GIT_MARKER index PATHS ${CMAKE_SOURCE_DIR}/.git)
+ IF (GIT_MARKER)
+-  FIND_PROGRAM(GITCOMMAND git PATHS c:/cygwin/bin)
++  FIND_PROGRAM(GITCOMMAND git PATHS c:/Progra~1/Git/bin)
+   IF(GITCOMMAND)
+     IF(MSVC)
+       ADD_CUSTOM_COMMAND(
+diff --git a/images/icons/qgis-icon-16x16.png b/images/icons/qgis-icon-16x16.png
+Binary files a/images/icons/qgis-icon-16x16.png and ./images/icons/qgis-icon-16x16.png differ
+diff --git a/images/icons/qgis-icon-60x60.png b/images/icons/qgis-icon-60x60.png
+Binary files a/images/icons/qgis-icon-60x60.png and ./images/icons/qgis-icon-60x60.png differ
+diff --git a/images/splash/splash.png b/images/splash/splash.png
+Binary files a/images/splash/splash.png and .images/splash/splash.png differ
+diff --git a/src/app/qgis.ico b/src/app/qgis.ico
+Binary files a/src/app/qgis.ico and ./src/app/qgis.ico differ
+diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
+index c18664d..819584c 100644
+--- a/src/app/qgisapp.cpp
++++ b/src/app/qgisapp.cpp
+@@ -308,6 +308,8 @@ class QTreeWidgetItem;
+ const int BEFORE_RECENT_PATHS = 123;
+ const int AFTER_RECENT_PATHS = 321;
+ 
++const int NEXTGIS_QGIS_BUILD_NUMBER = 13;
++
+ /** set the application title bar text
+ 
+   If the current project title is null
+@@ -320,8 +322,10 @@ const int AFTER_RECENT_PATHS = 321;
+   */
+ static void setTitleBarText_( QWidget & qgisApp )
+ {
+-  QString caption = QgisApp::tr( "QGIS " );
+-
++  QString caption = QgisApp::tr( "NextGIS QGIS" );
++  
++  caption += QString(" - ");
++  
+   if ( QString( QGis::QGIS_VERSION ).endsWith( "Master" ) )
+   {
+     caption += QString( "%1" ).arg( QGis::QGIS_DEV_VERSION );
+@@ -349,6 +353,7 @@ static void setTitleBarText_( QWidget & qgisApp )
+     caption += " - " + QgsProject::instance()->title();
+   }
+ 
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
+   qgisApp.setWindowTitle( caption );
+ } // setTitleBarText_( QWidget * qgisApp )
+ 
+@@ -614,7 +619,8 @@ QgisApp::QgisApp( QSplashScreen *splash, bool restorePlugins, QWidget * parent,
+   connect( QgsMapLayerActionRegistry::instance(), SIGNAL( changed() ), this, SLOT( refreshActionFeatureAction() ) );
+ 
+   // set application's caption
+-  QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
++  QString caption = tr( "NextGIS QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
+   setWindowTitle( caption );
+ 
+   QgsMessageLog::logMessage( tr( "QGIS starting..." ), QString::null, QgsMessageLog::INFO );
