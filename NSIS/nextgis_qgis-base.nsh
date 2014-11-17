@@ -162,7 +162,7 @@ Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
     
     SetOutPath "$INSTALL_DIR\bin"
     File /r "${QGIS_RUN_BAT}"
-    File /r "${QGIS_PRE_RUN_BAT}"
+    #File /r "${QGIS_PRE_RUN_BAT}"
     File /r "..\qgis_preruner.py"
     
     SetOutPath "$INSTALL_DIR"
@@ -201,8 +201,8 @@ LangString DEL_QGIS ${LANG_RUSSIAN} "Удалить"
 LangString DEL_QGIS ${LANG_ENGLISH} "Delete"
 LangString RUN_QGIS ${LANG_RUSSIAN} "Запустить"
 LangString RUN_QGIS ${LANG_ENGLISH} "Run"
-LangString SET_DEFAULT_SETTINGS ${LANG_RUSSIAN} "Установить настройки по-умолчанию"
-LangString SET_DEFAULT_SETTINGS ${LANG_ENGLISH} "Set default settings"
+#LangString SET_DEFAULT_SETTINGS ${LANG_RUSSIAN} "Установить настройки по-умолчанию"
+#LangString SET_DEFAULT_SETTINGS ${LANG_ENGLISH} "Set default settings"
 ;--------------------------------
 
 Section "-DONE"
@@ -229,15 +229,15 @@ NoRebootNecessary:
         CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
         "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
         
-        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk"
-        CreateShortCut \
-        "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk" \
-        "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}_preruner.bat"' \
-        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
-        "" \
-        SW_SHOWNORMAL \
-        "" \
-        "$(SET_DEFAULT_SETTINGS)"
+        #Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk"
+        #CreateShortCut \
+        #"$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk" \
+        #"$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}_preruner.bat"' \
+        #"$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
+        #"" \
+        #SW_SHOWNORMAL \
+        #"" \
+        #"$(SET_DEFAULT_SETTINGS)"
         
         Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
         CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \

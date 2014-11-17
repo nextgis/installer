@@ -1,5 +1,5 @@
 !define PROGRAM_NAME "NextGIS QGIS" ; good
-!define PROGRAM_VERSION "2.4.0.13" ; good where 2.5.0 - version of qgis, 13 - NextGIS QGIS build
+!define PROGRAM_VERSION "2.6.0.17" ; good where 2.5.0 - version of qgis, 17 - NextGIS QGIS build
 
 !define PUBLISHER "NextGIS" ; good
 !define WEB_SITE "http://www.nextgis.ru" ; good

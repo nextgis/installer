@@ -1,7 +1,0 @@
-##########################
-# NextGIS QGIS dev
-########################
-Build version:  1
-
-QGIS version:   2.1.0 (7bc72d4f6dc494cbd7bbe31dd9ed23f07d3f6fe2)
-Installer version: 9

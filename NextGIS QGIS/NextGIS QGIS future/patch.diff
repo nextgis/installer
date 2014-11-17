@@ -11,6 +11,19 @@ index ae2fa33..f6d6180 100644
    IF(GITCOMMAND)
      IF(MSVC)
        ADD_CUSTOM_COMMAND(
+diff --git a/src/plugins/CMakeLists.txt b/src/plugins/CMakeLists.txt
+index e27ff94..4900bf1 100644
+--- a/src/plugins/CMakeLists.txt
++++ b/src/plugins/CMakeLists.txt
+@@ -6,7 +6,7 @@ ADD_SUBDIRECTORY(interpolation)
+ ADD_SUBDIRECTORY(oracle_raster)
+ ADD_SUBDIRECTORY(raster_terrain_analysis)
+ ADD_SUBDIRECTORY(coordinate_capture)
+-ADD_SUBDIRECTORY(dxf2shp_converter)
++#ADD_SUBDIRECTORY(dxf2shp_converter)
+ ADD_SUBDIRECTORY(evis)
+ ADD_SUBDIRECTORY(spatialquery)
+ ADD_SUBDIRECTORY(roadgraph)
 diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
 index 0d9fadb..cc618aa 100644
 --- a/src/app/qgisapp.cpp
@@ -19,7 +32,7 @@ index 0d9fadb..cc618aa 100644
  const int BEFORE_RECENT_PATHS = 123;
  const int AFTER_RECENT_PATHS = 321;
  
-+const int NEXTGIS_QGIS_BUILD_NUMBER = 12;
++const int NEXTGIS_QGIS_BUILD_NUMBER = 17;
  /** set the application title bar text
  
    If the current project title is null

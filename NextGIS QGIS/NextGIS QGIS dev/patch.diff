@@ -19,7 +19,7 @@ index 0d9fadb..cc618aa 100644
  const int BEFORE_RECENT_PATHS = 123;
  const int AFTER_RECENT_PATHS = 321;
  
-+const int NEXTGIS_QGIS_BUILD_NUMBER = 12;
++const int NEXTGIS_QGIS_BUILD_NUMBER = 17;
  /** set the application title bar text
  
    If the current project title is null

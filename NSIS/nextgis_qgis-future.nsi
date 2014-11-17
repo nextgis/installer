@@ -1,5 +1,5 @@
 !define PROGRAM_NAME "NextGIS QGIS future" ; good
-!define PROGRAM_VERSION "2.5.0.12" ; good where 2.5.0 - version of qgis, 12 - NextGIS QGIS build
+!define PROGRAM_VERSION "2.7.0.17" ; good where 2.5.0 - version of qgis, 13 - NextGIS QGIS build
 
 !define PUBLISHER "NextGIS" ; good
 !define WEB_SITE "http://www.nextgis.ru" ; good
@@ -18,7 +18,7 @@
 !define QGIS_SRC_DIR "D:\builds\nextgis-qgis-future" ;good
 !define GRASS_SRC_DIR "D:\builds\grass-fromOSGEO4W" ;good
 !define SAGA_SRC_DIR "D:\builds\saga-fromOSGEO4W" ;good
-!define GDAL_SRC_DIR "D:\builds\gdal-2.0.0" ;good
+!define GDAL_SRC_DIR "D:\builds\gdallib" ;good
 
 !define NextGIS_QGIS_RUN_LNK_NAME "NextGIS QGIS future (${PROGRAM_VERSION}).lnk" ; good
 !define NextGIS_QGIS_RUN_LNK_ICO_FileName "QGIS_dev.ico" ; good

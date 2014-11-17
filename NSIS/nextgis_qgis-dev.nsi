@@ -1,5 +1,5 @@
 !define PROGRAM_NAME "NextGIS QGIS dev" ; good
-!define PROGRAM_VERSION "2.5.0.12" ; good where 2.5.0 - version of qgis, 12 - NextGIS QGIS build
+!define PROGRAM_VERSION "2.7.0.17" ; good where 2.7.0 - version of qgis, 17 - NextGIS QGIS build
 
 !define PUBLISHER "NextGIS" ; good
 !define WEB_SITE "http://www.nextgis.ru" ; good
@@ -24,8 +24,8 @@
 !define NextGIS_QGIS_RUN_LNK_ICO_FileName "QGIS_dev.ico" ; good
 !define NextGIS_QGIS_RUN_LNK_ICO_Path "..\Installer-Files\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" ; good
 
-!define QGIS_RUN_BAT "..\NextGIS QGIS dev\qgis.bat"  ; good
-!define QGIS_PRE_RUN_BAT "..\NextGIS QGIS dev\qgis_preruner.bat"  ; good
+!define QGIS_RUN_BAT "..\NextGIS QGIS\NextGIS QGIS dev\qgis.bat"  ; good
+#!define QGIS_PRE_RUN_BAT "..\NextGIS QGIS\NextGIS QGIS dev\qgis_preruner.bat"  ; good
 
 !define QGIS_POSTINSTALL_BAT "..\Installer-Files\postinstall.bat" ; good
 !define QGIS_PREREMOVE_BAT "..\Installer-Files\preremove.bat" ;  good
