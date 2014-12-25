@@ -169,9 +169,9 @@ Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
     File /r "..\nextgis_qgis.ini"
 SectionEnd
 
-!ifdef ${PLUGINS}
+!ifdef PLUGINS
     Section "-QGIS_PLUGINS" QGIS_PLUGINS  
-        SetOutPath "$INSTALL_DIR\apps\${SHORTNAME}\python\plugins\"
+        SetOutPath "$INSTALL_DIR\apps\qgis\python\plugins\"
         File /r ${PLUGINS}
     SectionEnd
 !endif
@@ -189,8 +189,18 @@ SectionEnd
 Section "-GDAL" GDAL
     SetOutPath "$INSTALL_DIR\"
 	File /r "${GDAL_SRC_DIR}\*.*"
+    
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${ICONV_SRC_DIR}\*.*"
 SectionEnd
 
+Section "-FONTS" FONTS
+    SetOutPath "$INSTALL_DIR\fonts\"
+	File /r "${FONTS_DIR}\*.*"
+    SetOutPath "$INSTALL_DIR"
+    File /r "..\Installer-Files\install_font.bat"
+    File /r "..\Installer-Files\install_fonts.bat"
+SectionEnd
 ;--------------------------------
 ;Language strings
 LangString QGIS_MAN ${LANG_RUSSIAN} "Руководство пользователя QGIS"
@@ -244,7 +254,14 @@ NoRebootNecessary:
         "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${PROGRAM_NAME}"
         
         Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk"
-        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        
+        ${Switch} $LANGUAGE
+        ${Case} ${LANG_RUSSIAN}
+            CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_RU}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        ${Break}
+        ${Default}
+            CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_EN}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        ${EndSwitch}
 SectionEnd
 
 ;--------------------------------

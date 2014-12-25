@@ -19,7 +19,7 @@ index c18664d..819584c 100644
  const int BEFORE_RECENT_PATHS = 123;
  const int AFTER_RECENT_PATHS = 321;
  
-+const int NEXTGIS_QGIS_BUILD_NUMBER = 17;
++const int NEXTGIS_QGIS_BUILD_NUMBER = 18;
 +
  /** set the application title bar text
  
