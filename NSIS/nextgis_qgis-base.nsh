@@ -9,7 +9,7 @@ InstallDir "${DEFAULT_INSTALL_DIR}"
 !include "LogicLib.nsh"
 !include "utils.nsh"
 
-!addplugindir ../osgeo4w/nsis
+!addplugindir plugins
 
 ShowInstDetails show
 ShowUnInstDetails show
@@ -163,10 +163,10 @@ Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
     SetOutPath "$INSTALL_DIR\bin"
     File /r "${QGIS_RUN_BAT}"
     #File /r "${QGIS_PRE_RUN_BAT}"
-    File /r "..\qgis_preruner.py"
+    File /r "..\Installer-Files\qgis_preruner.py"
     
     SetOutPath "$INSTALL_DIR"
-    File /r "..\nextgis_qgis.ini"
+    File /r "..\Installer-Files\nextgis_qgis.ini"
 SectionEnd
 
 !ifdef PLUGINS
@@ -176,16 +176,21 @@ SectionEnd
     SectionEnd
 !endif
 
+!ifdef  GRASS_SRC_DIR
 Section "GRASS" GRASS
     SetOutPath "$INSTALL_DIR\"
 	File /r "${GRASS_SRC_DIR}\*.*"
 SectionEnd
+!endif
 
+!ifdef  SAGA_SRC_DIR
 Section "SAGA" SAGA
     SetOutPath "$INSTALL_DIR\"
 	File /r "${SAGA_SRC_DIR}\*.*"
 SectionEnd
+!endif
 
+!ifdef GDAL_SRC_DIR
 Section "-GDAL" GDAL
     SetOutPath "$INSTALL_DIR\"
 	File /r "${GDAL_SRC_DIR}\*.*"
@@ -193,14 +198,17 @@ Section "-GDAL" GDAL
     SetOutPath "$INSTALL_DIR\"
 	File /r "${ICONV_SRC_DIR}\*.*"
 SectionEnd
+endif
 
-Section "-FONTS" FONTS
-    SetOutPath "$INSTALL_DIR\fonts\"
-	File /r "${FONTS_DIR}\*.*"
-    SetOutPath "$INSTALL_DIR"
-    File /r "..\Installer-Files\install_font.bat"
-    File /r "..\Installer-Files\install_fonts.bat"
-SectionEnd
+!ifdef FONTS_DIR
+	Section "-FONTS" FONTS
+		SetOutPath "$INSTALL_DIR\fonts\"
+		File /r "${FONTS_DIR}\*.*"
+		SetOutPath "$INSTALL_DIR"
+		File /r "..\Installer-Files\install_font.bat"
+		File /r "..\Installer-Files\install_fonts.bat"
+	SectionEnd
+!endif
 ;--------------------------------
 ;Language strings
 LangString QGIS_MAN ${LANG_RUSSIAN} "Руководство пользователя QGIS"
