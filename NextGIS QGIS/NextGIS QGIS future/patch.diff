@@ -28,15 +28,6 @@ diff --git a/src/app/qgisapp.cpp b/src/app/qgisapp.cpp
 index 5432eaf..a33160f 100644
 --- a/src/app/qgisapp.cpp
 +++ b/src/app/qgisapp.cpp
-@@ -315,6 +315,8 @@ extern "C"
- 
- class QTreeWidgetItem;
- 
-+const int NEXTGIS_QGIS_BUILD_NUMBER = 19;
-+
- /** set the application title bar text
- 
-   If the current project title is null
 @@ -327,7 +329,9 @@ class QTreeWidgetItem;
    */
  static void setTitleBarText_( QWidget & qgisApp )
@@ -52,7 +43,7 @@ index 5432eaf..a33160f 100644
      caption += " - " + QgsProject::instance()->title();
    }
  
-+  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_BUILD_NUMBER);
    qgisApp.setWindowTitle( caption );
  } // setTitleBarText_( QWidget * qgisApp )
  
@@ -63,7 +54,7 @@ index 5432eaf..a33160f 100644
 -  QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
 +  //QString caption = tr( "QGIS - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
 +  QString caption = tr( "NextGIS QGIS future - %1 ('%2')" ).arg( QGis::QGIS_VERSION ).arg( QGis::QGIS_RELEASE_NAME );
-+  caption += QString(" (bld. %1) ").arg(NEXTGIS_QGIS_BUILD_NUMBER);
++  caption += QString(" (bld. %1) ").arg(NEXTGIS_BUILD_NUMBER);
 +  
    setWindowTitle( caption );
  
