@@ -144,8 +144,8 @@ Section "NextGIS_QGIS" NextGIS_QGIS
 SectionEnd
 
 Section "-OSGEO4W_ENV" OSGEO4W_ENV
-    SetOutPath "$INSTALL_DIR\"
-    File /r "${OSGEO4W_SRC_DIR}\*.*"
+    SetOutPath "$INSTALL_DIR"
+    File /r ${OSGEO4W_SRC_DIR}
 SectionEnd
 
 Section "-QGIS" QGIS
@@ -153,7 +153,7 @@ Section "-QGIS" QGIS
     File /r "${QGIS_SRC_DIR}\*.*"
     
     SetOutPath "$INSTALL_DIR\bin\"
-    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
+    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"	
 SectionEnd
 
 Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
@@ -198,7 +198,7 @@ Section "-GDAL" GDAL
     SetOutPath "$INSTALL_DIR\"
 	File /r "${ICONV_SRC_DIR}\*.*"
 SectionEnd
-endif
+!endif
 
 !ifdef FONTS_DIR
 	Section "-FONTS" FONTS

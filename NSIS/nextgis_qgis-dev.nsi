@@ -12,6 +12,7 @@
 ; define by auto build system ======
 ;!define INSTALLER_DST_DIR "./" ; good
 ; ==================================
+
 !define INSTALLER_NAME "${INSTALLER_DST_DIR}\NextGIS-QGIS-dev-${PROGRAM_VERSION}.exe" ; good
 
 !define QGIS_DEFAULT_OPTIONS_PATH "..\NextGIS QGIS\qgis_default_options\" ; good
@@ -42,10 +43,12 @@
 !define NextGIS_QGIS_UNINSTALLER_FileName "Uninstall-NextGIS_QGIS_dev.exe" ; good
 !define NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX "NextGIS QGIS dev (${PROGRAM_VERSION})" ; good
 
-!define QGIS_MANUAL_FILE_NAME_RU "QGIS-2.6-UserGuide-ru.pdf"; good
-!define QGIS_MANUAL_FILE_NAME_EN "QGIS-2.6-UserGuide-en.pdf"; good
+; define by auto build system ======
+;!define QGIS_MANUAL_FILE_NAME_RU "QGIS-2.6-UserGuide-ru.pdf"; good
+;!define QGIS_MANUAL_FILE_NAME_EN "QGIS-2.6-UserGuide-en.pdf"; good
+;!define PLUGINS "d:\builds\plugins\identifyplus"; good 
+; ==================================
 
-;!define PLUGINS "d:\builds\plugins\identifyplus d:\builds\plugins\reporter"; good ! not define becose no need plugins
-;!define FONTS_DIR "d:\builds\fonts"
+!define FONTS_DIR "..\fonts"
 
 !include "nextgis_qgis-base.nsh"
