@@ -11,9 +11,8 @@
 
 ; define by auto build system ======
 ;!define INSTALLER_DST_DIR "./" ; good
+;!define INSTALLER_NAME "${INSTALLER_DST_DIR}\NextGIS-QGIS-future-${PROGRAM_VERSION}.exe" ; good
 ; ==================================
-
-!define INSTALLER_NAME "${INSTALLER_DST_DIR}\NextGIS-QGIS-future-${PROGRAM_VERSION}.exe" ; good
 
 !define QGIS_DEFAULT_OPTIONS_PATH "..\NextGIS QGIS\NextGIS QGIS future\qgis_default_options\" ; good
 
