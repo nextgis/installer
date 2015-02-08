@@ -1,0 +1,4 @@
+wget -N -nd -k -p -i update-list
+rm *.js
+mv style.css style.css.original
+cat style.css.original | sed -e s/\\/images\\/logo.png/logo.png/ -e s/\\/images\\/hbg.jpg/hbg.jpg/ > style.css

@@ -1,0 +1,19 @@
+<qgis_style version="0"><symbols>
+      <symbol alpha="1" name="osm_spatialite_googlemaps_roadshields_0" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="square" />
+          <prop k="color" v="186,136,183,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="0.26" />
+          <prop k="width_unit" v="MM" />
+        </layer>
+      </symbol>
+    </symbols>
+    </qgis_style>

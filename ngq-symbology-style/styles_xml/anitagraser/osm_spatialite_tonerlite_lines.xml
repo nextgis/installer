@@ -1,0 +1,462 @@
+<qgis_style version="0"><symbols>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_0" type="line">
+        <layer class="SimpleLine" locked="0" pass="3">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="60" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="0" pass="4">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="129,129,129,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="44.5714" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_1" type="line">
+        <layer class="SimpleLine" locked="0" pass="3">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="60" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="0" pass="4">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="129,129,129,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="44.5714" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_10" type="line">
+        <layer class="SimpleLine" locked="0" pass="10">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="15" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="1" pass="11">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="10" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_11" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="square" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="5" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_12" type="line">
+        <layer class="SimpleLine" locked="0" pass="1">
+          <prop k="capstyle" v="square" />
+          <prop k="color" v="220,220,220,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="5" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_13" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="219,219,219,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="0.8" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MM" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_14" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="219,219,219,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="0.2" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MM" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_15" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="172,172,172,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="penstyle" v="dot" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="0.6" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MM" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_16" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="172,172,172,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="penstyle" v="dot" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="0.6" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MM" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_2" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="60" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="0" pass="1">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="178,178,178,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="44.5714" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_3" type="line">
+        <layer class="SimpleLine" locked="0" pass="12">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="60" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="0" pass="13">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="129,129,129,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="44.5714" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_4" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="square" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="500" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="1" pass="2">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="333.333" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_5" type="line">
+        <layer class="SimpleLine" locked="1" pass="2">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="10" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_6" type="line">
+        <layer class="SimpleLine" locked="0" pass="0">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="15" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="1" pass="1">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="178,178,178,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="10" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_7" type="line">
+        <layer class="SimpleLine" locked="0" pass="10">
+          <prop k="capstyle" v="flat" />
+          <prop k="color" v="255,255,255,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MM" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="15" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+        <layer class="SimpleLine" locked="1" pass="11">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="10" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_8" type="line">
+        <layer class="SimpleLine" locked="1" pass="2">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="50" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_lines_9" type="line">
+        <layer class="SimpleLine" locked="1" pass="2">
+          <prop k="capstyle" v="round" />
+          <prop k="color" v="143,143,143,255" />
+          <prop k="customdash" v="5;2" />
+          <prop k="customdash_map_unit_scale" v="0,0" />
+          <prop k="customdash_unit" v="MapUnit" />
+          <prop k="draw_inside_polygon" v="0" />
+          <prop k="joinstyle" v="round" />
+          <prop k="offset" v="0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MapUnit" />
+          <prop k="penstyle" v="solid" />
+          <prop k="use_custom_dash" v="0" />
+          <prop k="width" v="10" />
+          <prop k="width_map_unit_scale" v="0,0" />
+          <prop k="width_unit" v="MapUnit" />
+        </layer>
+      </symbol>
+    </symbols>
+  </qgis_style>

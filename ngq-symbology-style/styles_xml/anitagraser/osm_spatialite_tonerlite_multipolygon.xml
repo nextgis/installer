@@ -1,0 +1,33 @@
+<qgis_style version="0"><symbols>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_multipolygon_0" type="fill">
+        <layer class="SimpleFill" locked="0" pass="2">
+          <prop k="border_width_map_unit_scale" v="0,0" />
+          <prop k="border_width_unit" v="MM" />
+          <prop k="color" v="219,219,219,255" />
+          <prop k="color_border" v="114,133,132,255" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0,0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="style" v="solid" />
+          <prop k="style_border" v="no" />
+          <prop k="width_border" v="0.26" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_tonerlite_multipolygon_1" type="fill">
+        <layer class="SimpleFill" locked="0" pass="0">
+          <prop k="border_width_map_unit_scale" v="0,0" />
+          <prop k="border_width_unit" v="MM" />
+          <prop k="color" v="228,228,228,255" />
+          <prop k="color_border" v="0,0,0,255" />
+          <prop k="joinstyle" v="bevel" />
+          <prop k="offset" v="0,0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="style" v="dense5" />
+          <prop k="style_border" v="no" />
+          <prop k="width_border" v="0.26" />
+        </layer>
+      </symbol>
+    </symbols>
+  </qgis_style>

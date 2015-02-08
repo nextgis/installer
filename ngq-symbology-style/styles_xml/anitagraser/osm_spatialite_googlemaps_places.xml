@@ -1,0 +1,45 @@
+<qgis_style version="0"><symbols>
+      <symbol alpha="1" name="osm_spatialite_googlemaps_places_0" type="marker">
+        <layer class="SimpleMarker" locked="0" pass="0">
+          <prop k="angle" v="0" />
+          <prop k="color" v="130,14,76,255" />
+          <prop k="color_border" v="0,0,0,255" />
+          <prop k="horizontal_anchor_point" v="1" />
+          <prop k="name" v="circle" />
+          <prop k="offset" v="0,0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="outline_style" v="solid" />
+          <prop k="outline_width" v="0" />
+          <prop k="outline_width_map_unit_scale" v="0,0" />
+          <prop k="outline_width_unit" v="MM" />
+          <prop k="scale_method" v="area" />
+          <prop k="size" v="2" />
+          <prop k="size_map_unit_scale" v="0,0" />
+          <prop k="size_unit" v="MM" />
+          <prop k="vertical_anchor_point" v="1" />
+        </layer>
+      </symbol>
+      <symbol alpha="1" name="osm_spatialite_googlemaps_places_1" type="marker">
+        <layer class="SimpleMarker" locked="0" pass="0">
+          <prop k="angle" v="0" />
+          <prop k="color" v="130,14,76,255" />
+          <prop k="color_border" v="0,0,0,255" />
+          <prop k="horizontal_anchor_point" v="1" />
+          <prop k="name" v="circle" />
+          <prop k="offset" v="0,0" />
+          <prop k="offset_map_unit_scale" v="0,0" />
+          <prop k="offset_unit" v="MM" />
+          <prop k="outline_style" v="solid" />
+          <prop k="outline_width" v="0" />
+          <prop k="outline_width_map_unit_scale" v="0,0" />
+          <prop k="outline_width_unit" v="MM" />
+          <prop k="scale_method" v="area" />
+          <prop k="size" v="2" />
+          <prop k="size_map_unit_scale" v="0,0" />
+          <prop k="size_unit" v="MM" />
+          <prop k="vertical_anchor_point" v="1" />
+        </layer>
+      </symbol>
+    </symbols>
+  </qgis_style>
