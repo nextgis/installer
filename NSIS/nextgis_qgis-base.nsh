@@ -16,6 +16,11 @@ ShowUnInstDetails show
 
 !define MUI_ABORTWARNING
 
+;--- Common parameters ---
+!define NGQ_UTILS_DIR "..\ngq-utils"
+!define NGQ_STYLES_DIR "..\ngq-symbology-style"
+!define NGQ_PRINT_TEMPLATES_DIR "..\ngq-print-templates"
+
 ;---- Only for NextGIS QGIS, NextGIS QGIS dev, NextGIS QGIS future --------------------
 !define MUI_ICON "..\Installer-Files\Install_QGIS.ico"
 !define MUI_UNICON "..\Installer-Files\Uninstall_QGIS.ico"
@@ -148,34 +153,6 @@ Section "-OSGEO4W_ENV" OSGEO4W_ENV
     File /r ${OSGEO4W_SRC_DIR}
 SectionEnd
 
-Section "-QGIS" QGIS
-    SetOutPath "$INSTALL_DIR\apps\qgis\"
-    File /r "${QGIS_SRC_DIR}\*.*"
-    
-    SetOutPath "$INSTALL_DIR\bin\"
-    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"	
-SectionEnd
-
-Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
-    SetOutPath "$INSTALL_DIR\defalut_options"
-    File /r "${QGIS_DEFAULT_OPTIONS_PATH}\*"
-    
-    SetOutPath "$INSTALL_DIR\bin"
-    File /r "${QGIS_RUN_BAT}"
-    #File /r "${QGIS_PRE_RUN_BAT}"
-    File /r "..\Installer-Files\qgis_preruner.py"
-    
-    SetOutPath "$INSTALL_DIR"
-    File /r "..\Installer-Files\nextgis_qgis.ini"
-SectionEnd
-
-!ifdef PLUGINS
-    Section "-QGIS_PLUGINS" QGIS_PLUGINS  
-        SetOutPath "$INSTALL_DIR\apps\qgis\python\plugins\"
-        File /r ${PLUGINS}
-    SectionEnd
-!endif
-
 !ifdef  GRASS_SRC_DIR
 Section "GRASS" GRASS
     SetOutPath "$INSTALL_DIR\"
@@ -200,11 +177,77 @@ Section "-GDAL" GDAL
 SectionEnd
 !endif
 
+Section "-QGIS" QGIS
+    SetOutPath "$INSTALL_DIR\apps\qgis\"
+    File /r "${QGIS_SRC_DIR}\*.*"
+    
+    SetOutPath "$INSTALL_DIR\bin\"
+    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
+	
+	SetOutPath "$INSTALL_DIR\ngq-utils"
+	File /nonfatal /r "${NGQ_UTILS_DIR}\*.*"
+SectionEnd
+
+Section "-QGIS_CUSTOMIZATION" QGIS_CUSTOMIZATION
+    SetOutPath "$INSTALL_DIR\defalut_options"
+    File /r "${QGIS_DEFAULT_OPTIONS_PATH}\*"
+    
+    SetOutPath "$INSTALL_DIR\bin"
+    File /r "${QGIS_RUN_BAT}"
+    #File /r "${QGIS_PRE_RUN_BAT}"
+    File /r "..\Installer-Files\qgis_preruner.py"
+    
+    SetOutPath "$INSTALL_DIR"
+    File /r "..\Installer-Files\nextgis_qgis.ini"
+SectionEnd
+
+!ifdef PLUGINS
+    Section "-QGIS_PLUGINS" QGIS_PLUGINS  
+        SetOutPath "$INSTALL_DIR\apps\qgis\python\plugins\"
+        File /r ${PLUGINS}
+    SectionEnd
+!endif
+
+!ifdef NGQ_STYLES_DIR
+    Section "STYLES" STYLES  
+        SetOutPath "$INSTALL_DIR\apps\qgis\svg\"
+        File /r "${NGQ_STYLES_DIR}\media\*.*"
+        
+        SetOutPath "$INSTALL_DIR\apps\qgis\resources"
+        File "${NGQ_STYLES_DIR}\symbology-ng-style.db"
+        
+        SetShellVarContext all
+        SetOutPath "$DOCUMENTS\${PROGRAM_NAME}\styles"
+        File /r "${NGQ_STYLES_DIR}\styles_qml\*.*"
+    SectionEnd
+!endif
+
+!ifdef  EXAMPLES_DIR
+Section "EXAMPLES" EXAMPLES   
+    SetOutPath "$INSTALL_DIR\defalut_options"
+    File /r "${EXAMPLES_DIR}\defalut_options\*.*"
+    
+    SetShellVarContext all
+    SetOutPath "$DOCUMENTS\${PROGRAM_NAME}\examples"
+    File /r "${EXAMPLES_DIR}\ngq_examples\*.*"
+SectionEnd
+!endif
+
+!ifdef  NGQ_PRINT_TEMPLATES_DIR
+Section "PRINT_TEMPLATES" PRINT_TEMPLATES   
+    SetOutPath "$INSTALL_DIR\apps\qgis\composer_templates"
+    File /r "${NGQ_PRINT_TEMPLATES_DIR}\print_templates\*.*"
+    
+    SetOutPath "$INSTALL_DIR\ngq-media\4print_templates"
+    File /r "${NGQ_PRINT_TEMPLATES_DIR}\print_templates_img\*.*"
+SectionEnd
+!endif
+
 !ifdef FONTS_DIR
 	Section "-FONTS" FONTS
 		SetOutPath "$INSTALL_DIR\fonts\"
 		File /r "${FONTS_DIR}\*.*"
-		SetOutPath "$INSTALL_DIR"
+		SetOutPath "$INSTALL_DIR\ngq-utils"
 		File /r "..\Installer-Files\install_font.bat"
 		File /r "..\Installer-Files\install_fonts.bat"
 	SectionEnd
@@ -224,52 +267,65 @@ LangString RUN_QGIS ${LANG_ENGLISH} "Run"
 ;--------------------------------
 
 Section "-DONE"
-    SetShellVarContext current
-	SetShellVarContext all
-	CreateDirectory "$SMPROGRAMS\${PROGRAM_NAME}"
-	GetFullPathName /SHORT $0 $INSTALL_DIR
-	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
-	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${PROGRAM_NAME}").r0'
+    SetShellVarContext all
+    CreateDirectory "$SMPROGRAMS\${PROGRAM_NAME}"
+    GetFullPathName /SHORT $0 $INSTALL_DIR
+    System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
+    System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\${PROGRAM_NAME}").r0'
     
     ReadEnvStr $0 COMSPEC
-	nsExec::ExecToLog '"$0" /c "$INSTALL_DIR\postinstall.bat"'
-	IfFileExists "$INSTALL_DIR\etc\reboot" RebootNecessary NoRebootNecessary
-
+    nsExec::ExecToLog '"$0" /c " "$INSTALL_DIR\postinstall.bat" "'
+    
+    !ifdef  EXAMPLES_DIR
+        SetShellVarContext all
+        nsExec::ExecToLog '"$0" /c " "$INSTALL_DIR\ngq-utils\ngq_template_process.bat" "$INSTALL_DIR\defalut_options\project_templates" "$DOCUMENTS\${PROGRAM_NAME}\examples" > "$INSTALL_DIR\install_examples.log" "'
+    !endif
+    !ifdef  NGQ_PRINT_TEMPLATES_DIR
+        nsExec::ExecToLog '"$0" /c " "$INSTALL_DIR\ngq-utils\ngq_template_process.bat" "$INSTALL_DIR\apps\qgis\composer_templates" "$INSTALL_DIR\ngq-media\4print_templates" > "$INSTALL_DIR\install_print_templates.log" "'
+    !endif
+    !ifdef FONTS_DIR
+        nsExec::ExecToLog '"$0" /c " "$INSTALL_DIR\ngq-utils\install_fonts.bat" > "$INSTALL_DIR\install_fonts.log" "'
+        SetRebootFlag true
+    !endif
+    RMDir "$INSTALL_DIR\ngq-utils"
+    
+    IfFileExists "$INSTALL_DIR\etc\reboot" RebootNecessary NoRebootNecessary
+    
 RebootNecessary:
-	SetRebootFlag true
+    SetRebootFlag true
 
 NoRebootNecessary:
-        Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}"
-        CreateShortCut "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
+    Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}"
+    CreateShortCut "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+    "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
 
-        Delete "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}"
-        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
-        "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
-        
-        #Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk"
-        #CreateShortCut \
-        #"$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk" \
-        #"$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}_preruner.bat"' \
-        #"$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
-        #"" \
-        #SW_SHOWNORMAL \
-        #"" \
-        #"$(SET_DEFAULT_SETTINGS)"
-        
-        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
-        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \
-        "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${PROGRAM_NAME}"
-        
-        Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk"
-        
-        ${Switch} $LANGUAGE
-        ${Case} ${LANG_RUSSIAN}
-            CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_RU}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
-        ${Break}
-        ${Default}
-            CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_EN}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
-        ${EndSwitch}
+    Delete "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}"
+    CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\${NextGIS_QGIS_RUN_LNK_NAME}" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}.bat"' \
+    "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
+    
+    #Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk"
+    #CreateShortCut \
+    #"$SMPROGRAMS\${PROGRAM_NAME}\$(SET_DEFAULT_SETTINGS).lnk" \
+    #"$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\${SHORTNAME}_preruner.bat"' \
+    #"$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
+    #"" \
+    #SW_SHOWNORMAL \
+    #"" \
+    #"$(SET_DEFAULT_SETTINGS)"
+    
+    Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
+    CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \
+    "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) ${PROGRAM_NAME}"
+    
+    Delete "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk"
+    
+    ${Switch} $LANGUAGE
+    ${Case} ${LANG_RUSSIAN}
+        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_RU}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+    ${Break}
+    ${Default}
+        CreateShortCut "$SMPROGRAMS\${PROGRAM_NAME}\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_EN}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+    ${EndSwitch}
 SectionEnd
 
 ;--------------------------------

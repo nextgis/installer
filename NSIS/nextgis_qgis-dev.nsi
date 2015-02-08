@@ -45,9 +45,9 @@
 ; define by auto build system ======
 ;!define QGIS_MANUAL_FILE_NAME_RU "QGIS-2.6-UserGuide-ru.pdf"; good
 ;!define QGIS_MANUAL_FILE_NAME_EN "QGIS-2.6-UserGuide-en.pdf"; good
-;!define PLUGINS "d:\builds\plugins\identifyplus"; good 
+;!define PLUGINS "d:\builds\plugins\identifyplus"; good
 ; ==================================
-
+!define EXAMPLES_DIR "..\ngq-examples"
 !define FONTS_DIR "..\fonts"
 
 !include "nextgis_qgis-base.nsh"
