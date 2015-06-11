@@ -1,0 +1,19 @@
+{"ngq_plugins": [
+    {"name": "identifyplus"},
+    {"name": "ngw_connect"},
+    {"name": "publish2ngw"},
+    {"name": "qgis2mobile"},
+    {"name": "qtiles"},
+    {"name": "quick_map_services"},
+    {"name": "ru_geocoder"}
+],
+"fonts":[
+    {"file": "OpenGostTypeA-Regular.ttf", "name":"OpenGost Type A TT Regular (TrueType)"},
+    {"file": "OpenGostTypeB-Regular.ttf", "name":"OpenGost Type B TT Regular (TrueType)"},
+    {"file": "symbol-signs.otf", "name":"SymbolSigns-Basisset (TrueType)"},
+    {"file": "webhostinghub-glyphs.ttf", "name":"WebHostingHub-Glyphs (TrueType)"},
+    {"file": "heydings_icons.ttf", "name":"Heydings Icons (TrueType)"}
+],
+"examples":"examples",
+"symbology_styles":"symbology-style",
+"print_templates":"print-templates"}

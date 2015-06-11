@@ -1,0 +1,20 @@
+[general]
+name=QTiles
+description=Generate tiles from QGIS project
+category=Plugins
+version=1.4.4
+qgisMinimumVersion=2.0
+
+author=NextGIS
+email=info@nextgis.org
+
+icon=icons/qtiles.png
+
+tags=raster,tiles
+
+homepage=https://github.com/nextgis/QTiles
+tracker=https://github.com/nextgis/QTiles/issues
+repository=https://github.com/nextgis/QTiles
+
+experimental=True
+deprecated=False
