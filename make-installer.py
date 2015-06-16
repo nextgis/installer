@@ -201,7 +201,7 @@ if ngq_customization_conf.has_key(u'default_qgis_options_dirs'):
     for dir in qgis_options_dirs.items():
         qgis_options_name = dir[0]
         qgis_options_dir = os.path.join(ngq_customization_dir, dir[1])
-        #print "qgis_options_dir: ",qgis_options_dir
+        
         qgis_options_dir = prepareQGISSettings(qgis_options_dir, plugins)
         counter +=1
         make_installer_command.append( "/DQGIS_DEFAULT_OPTIONS_%d_NAME=%s"%(counter, qgis_options_name) )
@@ -210,7 +210,6 @@ if ngq_customization_conf.has_key(u'default_qgis_options_dirs'):
         qgis_options_dirs_tmp.append(qgis_options_dir)
     #print "qgis_options_dirs_tmp: ", qgis_options_dirs_tmp
     make_installer_command.append( "/DQGIS_DEFAULT_OPTIONS_COUNT=%d"%counter )
-
 '''FONTS_DIR'''
 if os.path.exists(ngq_install_fonts_bat):
     os.remove(ngq_install_fonts_bat)

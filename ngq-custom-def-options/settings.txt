@@ -16,4 +16,5 @@
 ],
 "examples":"examples",
 "symbology_styles":"symbology-style",
-"print_templates":"print-templates"}
+"print_templates":"print-templates",
+"default_qgis_options_dirs":{"DEFAULT": "ngq_default_options"}}
