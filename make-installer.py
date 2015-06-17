@@ -43,22 +43,23 @@ def prepareQGISSettings(default_settings_dir, plugins):
     shutil.copytree(default_settings_dir, settings_dir)
     
     ini_file = os.path.join(settings_dir, "QGIS2.ini")
-    #config = ConfigParser.RawConfigParser()
-    #config.read(ini_file)
     config = QSettings(ini_file, QSettings.IniFormat)
     
-    # activate python plugin in settings
-    #if config.has_section('PythonPlugins') == False:
-    #    config.add_section('PythonPlugins')
     for plugin in plugins:
-        #config.set('PythonPlugins', os.path.basename(plugin), 'true')
         config.setValue("PythonPlugins/%s"%os.path.basename(plugin), True)
-        
-    #with open(ini_file, 'wb') as configfile:
-    #    config.write(configfile)
-        
-    return settings_dir
     
+    return settings_dir
+
+def getNGQVersion(ngq_install_dir):
+    qgs_config_file_path = os.path.join(ngq_install_dir, "include", "qgsconfig.h")
+    ngq_version = None
+    with open(qgs_config_file_path, "r") as f:
+        for line in f:
+             res = re.search('#define NGQ_VERSION "[\d+\.]+\d+"', line)
+             if res is not None:
+                ngq_version = re.search('[\d+\.]+\d+', res.group()).group()
+                break
+    return ngq_version
 # consts ====
 currnet_dir = os.path.dirname( os.path.abspath(__file__) )
 currnet_working_dir = os.getcwd()
@@ -181,7 +182,7 @@ if ngq_customization_conf.has_key(u'ngq_plugins'):
         make_installer_command.append( "/DPLUGINS=%s"%plugins_str )
 
 '''NGQ_BUILD_NUM'''
-if args.build_num is not None:
+if args.build_num is not None and args.build_num != "0":
     make_installer_command.append( "/DNGQ_BUILD_NUM=%s"%str(args.build_num) )
     
 '''INSTALLER_OUTPUT_DIR'''
@@ -236,7 +237,13 @@ if ngq_customization_conf.has_key(u'symbology_styles'):
 '''NGQ_PRINT_TEMPLATES_DIR'''
 if ngq_customization_conf.has_key(u'print_templates'):
     make_installer_command.append( "/DNGQ_PRINT_TEMPLATES_DIR=%s"%os.path.join(ngq_customization_dir, ngq_customization_conf[u'print_templates']) )
-    
+
+''' PROGRAM_VERSION '''
+version = getNGQVersion(args.qgis_output)
+print "ngq version: ", version
+if version is not None:
+    make_installer_command.append( "/DPROGRAM_VERSION=%s"%version )
+
 make_installer_command.append(nsis_script_name)
 try:
     #print "make_installer_command: ", make_installer_command

@@ -3,9 +3,9 @@
 !ifndef PROGRAM_NAME
     !define PROGRAM_NAME "NextGIS QGIS"
 !endif
-!ifndef PROGRAM_VERSION
-    !include "nextgis_qgis-verison.nsh"
-!endif
+
+; PROGRAM_VERSION must be set
+
 !ifdef NGQ_BUILD_NUM
     !define PROGRAM_VERSION_FULL "${PROGRAM_VERSION}.${NGQ_BUILD_NUM}"
     !undef PROGRAM_VERSION
