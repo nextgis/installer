@@ -7,6 +7,7 @@ import shutil
 import tempfile
 import subprocess
 import re
+import zipfile
 
 import pprint
 
@@ -118,6 +119,7 @@ print "ngq_customization_conf: "
 pp.pprint(ngq_customization_conf)
 
 print "==========================="
+
 # make installer ==========
 cwd = os.getcwd()
 os.chdir(nsis_script_dir)
