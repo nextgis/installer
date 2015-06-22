@@ -162,10 +162,14 @@ make_installer_command.append( "/DOSGEO4W_SRC_DIR=%s"%os.getenv("OSGEO_ENV_FOR_I
 make_installer_command.append( "/DQGIS_SRC_DIR=%s"%args.qgis_output )
 
 '''GRASS_SRC_DIR'''
-make_installer_command.append( "/DGRASS_SRC_DIR=%s"%os.getenv("GRASS_SRC_DIR", "").strip('"') )
+grass_dir = os.getenv("GRASS_SRC_DIR", "").strip('"')
+if grass_dir != "":
+    make_installer_command.append( "/DGRASS_SRC_DIR=%s"%grass_dir )
 
 '''SAGA_SRC_DIR'''
-make_installer_command.append( "/DSAGA_SRC_DIR=%s"%os.getenv("SAGA_SRC_DIR", "").strip('"') )
+saga_dir = os.getenv("SAGA_SRC_DIR", "").strip('"')
+if saga_dir != "":
+    make_installer_command.append( "/DSAGA_SRC_DIR=%s"%saga_dir )
 
 '''QGIS_MANUAL_FILE_NAME_RU'''
 make_installer_command.append( "/DQGIS_MANUAL_FILE_NAME_RU=QGIS-2.6-UserGuide-ru.pdf" )
@@ -251,8 +255,8 @@ try:
     #print "make_installer_command: ", make_installer_command
     for i in range(0, len(make_installer_command)):
         make_installer_command[i] = make_installer_command[i].encode('cp1251')
-    res = subprocess.check_output(make_installer_command)
-    #res = subprocess.check_call(make_installer_command)
+    #res = subprocess.check_output(make_installer_command)
+    res = subprocess.check_call(make_installer_command)
     print res
     
     output_desc_line = re.search('Output: ".+"', res).group()

@@ -9,7 +9,7 @@ RequestExecutionLevel admin
 Name "${PROGRAM_NAME}"
 OutFile "${OUTPUT_FILE}"
 
-InstallDir "${DEFAULT_INSTALL_DIR}"
+;InstallDir "${DEFAULT_INSTALL_DIR}"
 
 !addplugindir plugins
 

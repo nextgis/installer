@@ -29,8 +29,6 @@
 !endif
 !define OUTPUT_FILE "${INSTALLER_NAME}.exe"
 
-;!define DEFAULT_INSTALL_DIR "c:\${PROGRAM_NAME}" ! calculate in base
-
 !ifndef SMPROGRAMS_FOLDER_NAME_EN
     !define SMPROGRAMS_FOLDER_NAME_EN "${PROGRAM_NAME}"
 !endif
