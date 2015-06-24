@@ -2,6 +2,7 @@
 
 echo "======== Configurate env  Start==========="
 
+rem Set OSGEO4W_ROOT to OSGeo4W root dir with dev packages
 set OSGEO4W_ROOT=E:\builds\env\osgeo4w
 call "%OSGEO4W_ROOT%\bin\o4w_env.bat"
 set OSGEO4W_ROOT=%OSGEO4W_ROOT:\=/%
@@ -11,12 +12,11 @@ set INCLUDE=%INCLUDE%;%OSGEO4W_ROOT%\include
 set LIB=%LIB%;%OSGEO4W_ROOT%\lib;%OSGEO4W_ROOT%\lib;%OSGEO4W_ROOT%/apps/Python27/libs
 
 
-set VS90COMNTOOLS=%PROGRAMFILES(x86)%\Microsoft Visual Studio 9.0\Common7\Tools\
-call "%PROGRAMFILES(x86)%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" x86
+rem set VS90COMNTOOLS=%PROGRAMFILES%\Microsoft Visual Studio 9.0\Common7\Tools\
+call "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" x86
 
-set INCLUDE=%INCLUDE%;"%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0\include"
-set LIB=%LIB%;"%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0\lib"
-
+rem set INCLUDE=%INCLUDE%;%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\include
+rem set LIB=%LIB%;%PROGRAMFILES%\Microsoft SDKs\Windows\v7.0A\lib
 
 path %PATH%;%PROGRAMFILES(x86)%\CMake\bin
 path %PATH%;%PROGRAMFILES(x86)%\NSIS
@@ -24,18 +24,20 @@ path %PATH%;c:\cygwin64\bin
 path %PATH%;%PROGRAMFILES(x86)%/Git/bin
 path %PATH%;%PROGRAMFILES(x86)%/WinSCP
 
-set INCLUDE=%INCLUDE%;E:\builds\env\gdal-2.0.0dev\include
-set LIB=%LIB%;E:\builds\env\gdal-2.0.0dev\lib
-path %PATH%;E:\builds\env\gdal-2.0.0dev\bin;E:\builds\env\osgeo4w-iconv-1.9\bin;
+rem No need if gdal in osgeo
+rem set INCLUDE=%INCLUDE%;E:\builds\env\gdal-2.0.0dev\include
+rem set LIB=%LIB%;E:\builds\env\gdal-2.0.0dev\lib
+rem path %PATH%;E:\builds\env\gdal-2.0.0dev\bin;E:\builds\env\osgeo4w-iconv-1.9\bin;
 
+rem Set OSGEO_ENV_FOR_INSTALLER to OSGeo4W extract packages
 rem OSGEO_ENV_FOR_INSTALLER is list of dirs have to end with \*.*
 rem Example: OSGEO_ENV_FOR_INSTALLER="E:\osgeo4w\*.* E:\osgeo4w-grass\*.*"
-set OSGEO_ENV_FOR_INSTALLER="E:\builds\env\osgeo4w-4install\*.* E:\builds\env\gdal-2.0.0dev\*.* E:\builds\env\osgeo4w-iconv-1.9-dll\*.* E:\builds\env\osgeo4w-gdal-dll\*.*"
+set OSGEO_ENV_FOR_INSTALLER=c:\OSGEO4W-4installer\*.*
 
 rem GRASS_SRC_DIR is optional
-set GRASS_SRC_DIR="E:\builds\env\osgeo4w-grass"
+rem set GRASS_SRC_DIR="E:\builds\env\osgeo4w-grass"
 
 rem SAGA_SRC_DIR is optional
-set SAGA_SRC_DIR="E:\builds\env\osgeo4w-saga"
+rem set SAGA_SRC_DIR="E:\builds\env\osgeo4w-saga"
 
 echo "======== Configurate env  Finish==========="
