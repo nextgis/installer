@@ -255,8 +255,8 @@ try:
     #print "make_installer_command: ", make_installer_command
     for i in range(0, len(make_installer_command)):
         make_installer_command[i] = make_installer_command[i].encode('cp1251')
-    #res = subprocess.check_output(make_installer_command)
-    res = subprocess.check_call(make_installer_command)
+    res = subprocess.check_output(make_installer_command)
+    #res = subprocess.check_call(make_installer_command)
     print res
     
     output_desc_line = re.search('Output: ".+"', res).group()
