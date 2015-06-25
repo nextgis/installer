@@ -202,7 +202,7 @@ Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION
 SectionEnd
 
 !ifdef PLUGINS
-    Section "-QGIS_PLUGINS" QGIS_PLUGINS  
+    Section "PYTHON_PLUGINS" PYTHON_PLUGINS  
         SetOutPath "$INSTALL_DIR\apps\qgis\python\plugins\"
         File /r ${PLUGINS}
     SectionEnd
@@ -244,7 +244,7 @@ SectionEnd
 !endif
 
 !ifdef FONTS_DIR
-    Section "-FONTS" FONTS
+    Section "FONTS" FONTS
         SetOutPath "$INSTALL_DIR\fonts\"
         File /r "${FONTS_DIR}\*.*"
         SetOutPath "$INSTALL_DIR\ngq-utils"

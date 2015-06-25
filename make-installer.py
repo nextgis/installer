@@ -8,7 +8,6 @@ import tempfile
 import subprocess
 import re
 import zipfile
-
 import pprint
 
 from PyQt4.QtCore import QSettings
@@ -251,16 +250,16 @@ if version is not None:
     make_installer_command.append( "/DPROGRAM_VERSION=%s"%version )
 
 make_installer_command.append(nsis_script_name)
+
+print "NSIS command args: "
+pp.pprint(make_installer_command)
 try:
-    #print "make_installer_command: ", make_installer_command
     for i in range(0, len(make_installer_command)):
         make_installer_command[i] = make_installer_command[i].encode('cp1251')
-    res = subprocess.check_output(make_installer_command)
-    #res = subprocess.check_call(make_installer_command)
-    print res
+    res = subprocess.check_output(make_installer_command, stderr=subprocess.STDOUT, shell=True)
     
     output_desc_line = re.search('Output: ".+"', res).group()
-    print " output_desc_line: ",output_desc_line
+    
     installer_name = re.search('".+"', output_desc_line).group()
     installer_name = installer_name.strip('"')
     print " installer_name: ",installer_name
@@ -269,7 +268,7 @@ try:
         f.write(os.path.basename(installer_name))
     
 except subprocess.CalledProcessError as ex:
-    sys.exit("ERROR! Make installer error: %s\n"%str(ex))
+    sys.exit("ERROR! Make installer error: %s\n"%str(ex.output))
 except:
     sys.exit("ERROR! Make installer error: Unexpected error: %s\n"%sys.exc_info()[0])
         
