@@ -2,6 +2,7 @@
 rem %1 - ngq build dir
 rem %2 - ngq install dir
 rem %3 - ngq src dir
+rem %4 - ngq build type [BUILD or RELEASE]
 
 call %CONFIGURE_ENV_WIN32%
 
@@ -23,6 +24,7 @@ cmake -G "Visual Studio 9 2008" ^
 -D WITH_ORACLE=TRUE ^
 -D CMAKE_BUILD_TYPE=Release ^
 -D CMAKE_INSTALL_PREFIX=%2 ^
+-D NGQ_BUILD_TYPE=%4 ^
 %3
 
 echo "======== Configurate ngq  Finish==========="

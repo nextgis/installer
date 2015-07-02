@@ -77,7 +77,7 @@ parser = argparse.ArgumentParser(description='Script for make NGQ installer')
 
 parser.add_argument('--customization_zip', dest='configuration_zip', help='customization settings as zip archive')
 parser.add_argument('--customization_dir', dest='configuration_dir', help='customization settings as directory')
-parser.add_argument('--build_num', dest='build_num', help='build number ')
+# parser.add_argument('--build_num', dest='build_num', help='build number ')
 parser.add_argument('--qgis_output', dest='qgis_output', help='qgis build install dir')
 parser.add_argument('--installer_dir_dst', dest='installer_dir_dst', help='where put installer')
 args = parser.parse_args()
@@ -186,9 +186,9 @@ if ngq_customization_conf.has_key(u'ngq_plugins'):
     if len(plugins) > 0:
         make_installer_command.append( "/DPLUGINS=%s"%plugins_str )
 
-'''NGQ_BUILD_NUM'''
-if args.build_num is not None and args.build_num != "0":
-    make_installer_command.append( "/DNGQ_BUILD_NUM=%s"%str(args.build_num) )
+# '''NGQ_BUILD_NUM'''
+# if args.build_num is not None and args.build_num != "0":
+#     make_installer_command.append( "/DNGQ_BUILD_NUM=%s"%str(args.build_num) )
     
 '''INSTALLER_OUTPUT_DIR'''
 make_installer_command.append( "/DINSTALLER_OUTPUT_DIR=%s"%args.installer_dir_dst )
