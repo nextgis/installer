@@ -176,10 +176,11 @@ if ngq_customization_conf.has_key(u'ngq_title_en') and ngq_customization_conf.ha
 """
 ts_dst_filename = os.path.join(qgis_src_dir, 'i18n', 'qgis_ru.ts')
 if ngq_customization_conf.has_key(u'ngq_about_pages'):
-    shutil.copytree(
-        os.path.join(ngq_customization_dir, u'about_pages_contents'),
-        os.path.join(qgis_src_dir, u'resources/about_pages_contents'),
-        )
+    if os.path.exists(os.path.join(qgis_src_dir, u'resources/about_pages_contents')):
+        shutil.copytree(
+            os.path.join(ngq_customization_dir, u'about_pages_contents'),
+            os.path.join(qgis_src_dir, u'resources/about_pages_contents'),
+            )
     #page_indexes = ngq_customization_conf[u'ngq_about_pages'].keys()
     page_indexes = range(0, len(ngq_customization_conf[u'ngq_about_pages']))
     #page_indexes.sort()
