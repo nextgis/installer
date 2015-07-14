@@ -181,6 +181,9 @@ if ngq_customization_conf.has_key(u'ngq_about_pages'):
             os.path.join(ngq_customization_dir, u'about_pages_contents'),
             os.path.join(qgis_src_dir, u'resources/about_pages_contents'),
             )
+    else:
+        os.makedirs(os.path.join(qgis_src_dir, u'resources/about_pages_contents'))
+        
     #page_indexes = ngq_customization_conf[u'ngq_about_pages'].keys()
     page_indexes = range(0, len(ngq_customization_conf[u'ngq_about_pages']))
     #page_indexes.sort()
