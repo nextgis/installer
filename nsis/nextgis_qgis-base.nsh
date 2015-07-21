@@ -247,7 +247,13 @@ SectionEnd
     Section "FONTS" FONTS
         SetOutPath "$INSTALL_DIR\fonts\"
         File /r "${FONTS_DIR}\*.*"
-        SetOutPath "$INSTALL_DIR\ngq-utils"
+    SectionEnd
+!endif
+
+!ifdef DEFAULT_PROJECT
+    Section "-DEF_PROJ" DEF_PROJ
+        SetOutPath "$INSTALL_DIR\defalut_options"
+        File /oname=project_default.qgs "${DEFAULT_PROJECT}"
     SectionEnd
 !endif
 SectionGroupEnd

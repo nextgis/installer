@@ -176,7 +176,7 @@ if ngq_customization_conf.has_key(u'ngq_title_en') and ngq_customization_conf.ha
 """
 ts_dst_filename = os.path.join(qgis_src_dir, 'i18n', 'qgis_ru.ts')
 if ngq_customization_conf.has_key(u'ngq_about_pages'):
-    if os.path.exists(os.path.join(qgis_src_dir, u'resources/about_pages_contents')):
+    if os.path.exists(os.path.join(ngq_customization_dir, u'about_pages_contents')):
         shutil.copytree(
             os.path.join(ngq_customization_dir, u'about_pages_contents'),
             os.path.join(qgis_src_dir, u'resources/about_pages_contents'),

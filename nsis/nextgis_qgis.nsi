@@ -76,6 +76,7 @@
 ;!define EXAMPLES_DIR "ngq-examples"
 ;!define NGQ_STYLES_DIR "ngq-symbology-style"
 ;!define NGQ_PRINT_TEMPLATES_DIR "ngq-print-templates"
+;!define DEFAULT_PROJECT
 ; ==================================
 
 !include "nextgis_qgis-base.nsh"

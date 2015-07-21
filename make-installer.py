@@ -37,7 +37,7 @@ def prepareRunScripts(templates_scripts_dir, prog_name):
     processConfiguratorTemplate( vars, os.path.join(templates_scripts_dir, "qgis_preruner.bat.in"), os.path.join(scripts_dir, "qgis_preruner.bat") )
     return scripts_dir
     
-def prepareQGISSettings(default_settings_dir, plugins):
+def prepareQGISSettings(default_settings_dir, plugins, default_project):
     settings_dir = tempfile.mktemp('','ngq_settings_')
     
     shutil.copytree(default_settings_dir, settings_dir)
@@ -48,6 +48,9 @@ def prepareQGISSettings(default_settings_dir, plugins):
     for plugin in plugins:
         config.setValue("PythonPlugins/%s"%os.path.basename(plugin), True)
     
+    if default_project:
+        config.setValue("Qgis/newProjectDefault", True)
+        
     return settings_dir
 
 def getNGQVersion(ngq_install_dir):
@@ -194,8 +197,10 @@ if ngq_customization_conf.has_key(u'ngq_plugins'):
 make_installer_command.append( "/DINSTALLER_OUTPUT_DIR=%s"%args.installer_dir_dst )
 
 '''DEFAULT_PROJECT'''
+default_project = False
 if ngq_customization_conf.has_key(u'def_project'):
-    make_installer_command.append( "/DDEFAULT_PROJECT=%s"%ngq_customization_conf[u'def_project'] )
+    make_installer_command.append( "/DDEFAULT_PROJECT=%s"%os.path.join(ngq_customization_dir, ngq_customization_conf[u'def_project']) )
+    default_project = True
 
 '''QGIS_DEFAULT_OPTIONS'''
 #qgis_options_dir = default_qgis_options_dir
@@ -208,7 +213,7 @@ if ngq_customization_conf.has_key(u'default_qgis_options_dirs'):
         qgis_options_name = dir[0]
         qgis_options_dir = os.path.join(ngq_customization_dir, dir[1])
         
-        qgis_options_dir = prepareQGISSettings(qgis_options_dir, plugins)
+        qgis_options_dir = prepareQGISSettings(qgis_options_dir, plugins, default_project)
         counter +=1
         make_installer_command.append( "/DQGIS_DEFAULT_OPTIONS_%d_NAME=%s"%(counter, qgis_options_name) )
         make_installer_command.append( "/DQGIS_DEFAULT_OPTIONS_%d_PATH=%s"%(counter, qgis_options_dir) )
