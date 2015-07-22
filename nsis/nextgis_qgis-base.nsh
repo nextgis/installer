@@ -156,6 +156,17 @@ Section "-OSGEO4W_ENV" OSGEO4W_ENV
     File /r ${OSGEO4W_SRC_DIR}
 SectionEnd
 
+Section "-NGQ" NGQ
+    SetOutPath "$INSTALL_DIR\apps\qgis\"
+    File /r "${QGIS_SRC_DIR}\*.*"
+    
+    SetOutPath "$INSTALL_DIR\bin\"
+    File "${QGIS_SRC_DIR}\bin\qgis.exe"
+	
+	SetOutPath "$INSTALL_DIR\ngq-utils"
+	File /r "${NGQ_UTILS_DIR}\*.*"
+SectionEnd
+
 SectionGroup "Components"
 
 !ifdef  GRASS_SRC_DIR
@@ -172,17 +183,6 @@ Section "SAGA" SAGA
 SectionEnd
 !endif
 
-Section "-NGQ" NGQ
-    SetOutPath "$INSTALL_DIR\apps\qgis\"
-    File /r "${QGIS_SRC_DIR}\*.*"
-    
-    SetOutPath "$INSTALL_DIR\bin\"
-    File /r "${QGIS_SRC_DIR}\bin\qgis.exe"
-	
-	SetOutPath "$INSTALL_DIR\ngq-utils"
-	File /nonfatal /r "${NGQ_UTILS_DIR}\*.*"
-SectionEnd
-
 Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION
     ${If} ${QGIS_DEFAULT_OPTIONS_COUNT} == 1
         SetOutPath "$INSTALL_DIR\defalut_options\QGIS"
@@ -190,15 +190,15 @@ Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION
     ${EndIf}
     
     SetOutPath "$INSTALL_DIR\defalut_options\python"
-    File /r "..\ngq_default_options\python\foo.txt"
+    File "..\ngq_default_options\python\foo.txt"
     
     SetOutPath "$INSTALL_DIR\bin"
-    File /r "${QGIS_RUN_BAT}"
-    File /r "${QGIS_PRE_RUN_BAT}"
-    File /r "ngq-additionals\qgis_preruner.py"
+    File "${QGIS_RUN_BAT}"
+    File "${QGIS_PRE_RUN_BAT}"
+    File "ngq-additionals\qgis_preruner.py"
     
     SetOutPath "$INSTALL_DIR"
-    File /r "ngq-additionals\nextgis_qgis.ini"
+    File "ngq-additionals\nextgis_qgis.ini"
 SectionEnd
 
 !ifdef PLUGINS
