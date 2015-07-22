@@ -167,22 +167,6 @@ Section "-NGQ" NGQ
 	File /r "${NGQ_UTILS_DIR}\*.*"
 SectionEnd
 
-SectionGroup "Components"
-
-!ifdef  GRASS_SRC_DIR
-Section "GRASS" GRASS
-    SetOutPath "$INSTALL_DIR\"
-	File /r "${GRASS_SRC_DIR}\*.*"
-SectionEnd
-!endif
-
-!ifdef  SAGA_SRC_DIR
-Section "SAGA" SAGA
-    SetOutPath "$INSTALL_DIR\"
-	File /r "${SAGA_SRC_DIR}\*.*"
-SectionEnd
-!endif
-
 Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION
     ${If} ${QGIS_DEFAULT_OPTIONS_COUNT} == 1
         SetOutPath "$INSTALL_DIR\defalut_options\QGIS"
@@ -200,6 +184,22 @@ Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION
     SetOutPath "$INSTALL_DIR"
     File "ngq-additionals\nextgis_qgis.ini"
 SectionEnd
+
+SectionGroup "Components"
+
+!ifdef  GRASS_SRC_DIR
+Section "GRASS" GRASS
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${GRASS_SRC_DIR}\*.*"
+SectionEnd
+!endif
+
+!ifdef  SAGA_SRC_DIR
+Section "SAGA" SAGA
+    SetOutPath "$INSTALL_DIR\"
+	File /r "${SAGA_SRC_DIR}\*.*"
+SectionEnd
+!endif
 
 !ifdef PLUGINS
     Section "PYTHON_PLUGINS" PYTHON_PLUGINS  
@@ -257,6 +257,7 @@ SectionEnd
     SectionEnd
 !endif
 SectionGroupEnd
+
 !ifdef QGIS_DEFAULT_OPTIONS_2_PATH
 SectionGroup "User interface"
     !ifdef QGIS_DEFAULT_OPTIONS_1_PATH
