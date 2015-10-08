@@ -14,7 +14,7 @@ cd /D %1
 
 echo "======== Configurate ngq  Start==========="
 
-cmake -G "Visual Studio 9 2008" ^
+cmake -G "NMake Makefiles" ^
 -D PEDANTIC=TRUE ^
 -D WITH_QSPATIALITE=TRUE ^
 -D WITH_MAPSERVER=TRUE ^
