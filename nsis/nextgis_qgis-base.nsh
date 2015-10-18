@@ -78,6 +78,30 @@ ShowUnInstDetails show
 ;because this will make your installer start faster.
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
+
+;--------------------------------
+;Language strings
+LangString QGIS_MAN ${LANG_RUSSIAN} "Руководство пользователя QGIS"
+LangString QGIS_MAN ${LANG_ENGLISH} "Manual QGIS"
+LangString QGIS_MAN_HELP ${LANG_RUSSIAN} "Открыть руководство пользователя QGIS"
+LangString QGIS_MAN_HELP ${LANG_ENGLISH} "Open QGIS manual"
+LangString DEL_QGIS ${LANG_RUSSIAN} "Удалить"
+LangString DEL_QGIS ${LANG_ENGLISH} "Delete"
+LangString RUN_QGIS ${LANG_RUSSIAN} "Запустить"
+LangString RUN_QGIS ${LANG_ENGLISH} "Run"
+LangString SET_DEFAULT_SETTINGS ${LANG_RUSSIAN} "Установить настройки по-умолчанию"
+LangString SET_DEFAULT_SETTINGS ${LANG_ENGLISH} "Set default settings"
+
+LangString SMPROGRAMS_FOLDER_NAME ${LANG_RUSSIAN} "${SMPROGRAMS_FOLDER_NAME_RU}"
+LangString SMPROGRAMS_FOLDER_NAME ${LANG_ENGLISH} "${SMPROGRAMS_FOLDER_NAME_EN}"
+
+LangString NextGIS_QGIS_RUN_LNK_NAME ${LANG_RUSSIAN} "${NextGIS_QGIS_RUN_LNK_NAME_RU}"
+LangString NextGIS_QGIS_RUN_LNK_NAME ${LANG_ENGLISH} "${NextGIS_QGIS_RUN_LNK_NAME_EN}"
+
+LangString PROGRAM_NAME_4_PROGS_AND_FEAT ${LANG_RUSSIAN} "${PROGRAM_NAME_RU}"
+LangString PROGRAM_NAME_4_PROGS_AND_FEAT ${LANG_ENGLISH} "${PROGRAM_NAME_EN}"
+
+!define NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX "$(NextGIS_QGIS_RUN_LNK_NAME)"
   
 Function wel_pre
     ${Switch} $LANGUAGE
@@ -135,13 +159,13 @@ Section "NextGIS QGIS" NextGIS_QGIS
 	
 	WriteUninstaller "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}"
 	
-	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "Name" "${PROGRAM_NAME}"
+	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "Name" "$(PROGRAM_NAME_4_PROGS_AND_FEAT)"
 	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "VersionNumber" "${PROGRAM_VERSION}"
 	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "Publisher" "${PUBLISHER}"
 	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "WebSite" "${WEB_SITE}"
 	WriteRegStr HKLM "Software\${PROGRAM_NAME}" "InstallPath" "$INSTALL_DIR"
 	
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayName" "${PROGRAM_NAME}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayName" "$(PROGRAM_NAME_4_PROGS_AND_FEAT)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "UninstallString" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayVersion" "${PROGRAM_VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}" "DisplayIcon" "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}"
@@ -275,29 +299,12 @@ SectionGroup "User interface"
 SectionGroupEnd
 !endif
 
-;--------------------------------
-;Language strings
-LangString QGIS_MAN ${LANG_RUSSIAN} "Руководство пользователя QGIS"
-LangString QGIS_MAN ${LANG_ENGLISH} "Manual QGIS"
-LangString QGIS_MAN_HELP ${LANG_RUSSIAN} "Открыть руководство пользователя QGIS"
-LangString QGIS_MAN_HELP ${LANG_ENGLISH} "Open QGIS manual"
-LangString DEL_QGIS ${LANG_RUSSIAN} "Удалить"
-LangString DEL_QGIS ${LANG_ENGLISH} "Delete"
-LangString RUN_QGIS ${LANG_RUSSIAN} "Запустить"
-LangString RUN_QGIS ${LANG_ENGLISH} "Run"
-LangString SET_DEFAULT_SETTINGS ${LANG_RUSSIAN} "Установить настройки по-умолчанию"
-LangString SET_DEFAULT_SETTINGS ${LANG_ENGLISH} "Set default settings"
-
-LangString SMPROGRAMS_FOLDER_NAME_LANG ${LANG_RUSSIAN} "${SMPROGRAMS_FOLDER_NAME_RU}"
-LangString SMPROGRAMS_FOLDER_NAME_LANG ${LANG_ENGLISH} "${SMPROGRAMS_FOLDER_NAME_EN}"
-;--------------------------------
-
 Section "-DONE"
     SetShellVarContext all
-    CreateDirectory "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)"
+    CreateDirectory "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)"
     GetFullPathName /SHORT $0 $INSTALL_DIR
     System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
-    System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)").r0'
+    System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)").r0'
     
     ReadEnvStr $0 COMSPEC
     nsExec::ExecToLog '"$0" /c " "$INSTALL_DIR\postinstall.bat" "'
@@ -321,17 +328,17 @@ RebootNecessary:
     SetRebootFlag true
 
 NoRebootNecessary:
-    Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}.lnk"
-    CreateShortCut "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}.lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis.bat"' \
+    Delete "$DESKTOP\$(NextGIS_QGIS_RUN_LNK_NAME).lnk"
+    CreateShortCut "$DESKTOP\$(NextGIS_QGIS_RUN_LNK_NAME).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis.bat"' \
     "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"
 
-    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\${NextGIS_QGIS_RUN_LNK_NAME}.lnk"
-    CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\${NextGIS_QGIS_RUN_LNK_NAME}.lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis.bat"' \
-    "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) $(SMPROGRAMS_FOLDER_NAME_LANG)"
+    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(NextGIS_QGIS_RUN_LNK_NAME).lnk"
+    CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(NextGIS_QGIS_RUN_LNK_NAME).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis.bat"' \
+    "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) $(SMPROGRAMS_FOLDER_NAME)"
     
-    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(SET_DEFAULT_SETTINGS).lnk"
+    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(SET_DEFAULT_SETTINGS).lnk"
     CreateShortCut \
-    "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(SET_DEFAULT_SETTINGS).lnk" \
+    "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(SET_DEFAULT_SETTINGS).lnk" \
     "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis_preruner.bat"' \
     "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" \
     "" \
@@ -339,18 +346,18 @@ NoRebootNecessary:
     "" \
     "$(SET_DEFAULT_SETTINGS)"
     
-    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
-    CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \
-    "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) $(SMPROGRAMS_FOLDER_NAME_LANG)"
+    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk"
+    CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(DEL_QGIS) ${NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX}.lnk" "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" \
+    "$INSTALL_DIR\${NextGIS_QGIS_UNINSTALLER_FileName}" "" SW_SHOWNORMAL "" "$(DEL_QGIS) $(SMPROGRAMS_FOLDER_NAME)"
     
-    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(QGIS_MAN).lnk"
+    Delete "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(QGIS_MAN).lnk"
     
     ${Switch} $LANGUAGE
     ${Case} ${LANG_RUSSIAN}
-        CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_RU}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_RU}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
     ${Break}
     ${Default}
-        CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_EN}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
+        CreateShortCut "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)\$(QGIS_MAN).lnk" "$INSTALL_DIR\manual\${QGIS_MANUAL_FILE_NAME_EN}" "" "" "" "" "" "$(QGIS_MAN_HELP)"
     ${EndSwitch}
     
     !insertmacro APP_ASSOCIATE "qgs" "ngq.project" "Nextgis QGIS Project" "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "Open with ${PROGRAM_NAME}" \ 
@@ -429,7 +436,7 @@ FunctionEnd
 Section "Uninstall"	
 	GetFullPathName /SHORT $0 $INSTDIR
 	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_ROOT", "$0").r0'
-	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)").r0'
+	System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("OSGEO4W_STARTMENU", "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)").r0'
 
 	ReadEnvStr $0 COMSPEC
 	nsExec::ExecToLog '"$0" /c "$INSTALL_DIR\preremove.bat"'
@@ -437,10 +444,10 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR"
 
 	SetShellVarContext all
-	Delete "$DESKTOP\${NextGIS_QGIS_RUN_LNK_NAME}.lnk"
+	Delete "$DESKTOP\$(NextGIS_QGIS_RUN_LNK_NAME).lnk"
     
 	SetShellVarContext all
-	RMDir /r "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME_LANG)"
+	RMDir /r "$SMPROGRAMS\$(SMPROGRAMS_FOLDER_NAME)"
 
 	DeleteRegKey HKLM "Software\${PROGRAM_NAME}"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROGRAM_NAME}"

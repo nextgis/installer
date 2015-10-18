@@ -1,7 +1,16 @@
 ; define by auto build system ======
 ; ==================================
-!ifndef PROGRAM_NAME
-    !define PROGRAM_NAME "NextGIS QGIS"
+!ifndef PROGRAM_NAME_EN
+	!ifdef PROGRAM_NAME
+		!define PROGRAM_NAME_EN "${PROGRAM_NAME}"
+		!undef PROGRAM_NAME
+	!else
+		!define PROGRAM_NAME_EN "NextGIS QGIS"
+	!endif
+	!define PROGRAM_NAME "${PROGRAM_NAME_EN}"
+!endif
+!ifndef PROGRAM_NAME_RU
+    !define PROGRAM_NAME_RU "${PROGRAM_NAME_EN}"
 !endif
 
 ; PROGRAM_VERSION must be set
@@ -36,8 +45,16 @@
     !define SMPROGRAMS_FOLDER_NAME_RU "${SMPROGRAMS_FOLDER_NAME_EN}"
 !endif
 
-!ifndef NextGIS_QGIS_RUN_LNK_NAME
-    !define NextGIS_QGIS_RUN_LNK_NAME "NextGIS QGIS (${PROGRAM_VERSION})"
+!ifndef NextGIS_QGIS_RUN_LNK_NAME_EN
+	!ifdef NextGIS_QGIS_RUN_LNK_NAME
+		!define NextGIS_QGIS_RUN_LNK_NAME_EN "${NextGIS_QGIS_RUN_LNK_NAME}"
+		!undef NextGIS_QGIS_RUN_LNK_NAME
+	!else
+		!define NextGIS_QGIS_RUN_LNK_NAME_EN "NextGIS QGIS (${PROGRAM_VERSION})"
+	!endif
+!endif
+!ifndef NextGIS_QGIS_RUN_LNK_NAME_RU
+    !define NextGIS_QGIS_RUN_LNK_NAME_RU "${NextGIS_QGIS_RUN_LNK_NAME_EN}"
 !endif
 
 !ifndef NextGIS_QGIS_RUN_LNK_ICO_FileName
@@ -48,7 +65,6 @@
 !ifndef NextGIS_QGIS_UNINSTALLER_FileName
     !define NextGIS_QGIS_UNINSTALLER_FileName "Uninstall-ngq.exe"
 !endif
-!define NextGIS_QGIS_UNINSTALL_LNK_NAME_SUFFIX "${NextGIS_QGIS_RUN_LNK_NAME}"
 
 ; define by auto build system ======
 ;!define OSGEO4W_SRC_DIR ""
