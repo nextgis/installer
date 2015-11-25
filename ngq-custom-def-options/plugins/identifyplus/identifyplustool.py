@@ -31,11 +31,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-import identifyplusresults
-
 import resources_rc
-
-import functools
 
 class IdentifyPlusTool(QgsMapTool):
   used = pyqtSignal(QgsPoint)

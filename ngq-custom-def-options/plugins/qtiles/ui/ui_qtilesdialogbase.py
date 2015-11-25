@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui/qtilesdialogbase.ui'
 #
-# Created: Wed Jan 14 17:24:42 2015
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Mon Sep 28 17:14:08 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,12 +12,26 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(526, 441)
+        Dialog.resize(724, 671)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
+        Dialog.setSizePolicy(sizePolicy)
         self.verticalLayout = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -26,7 +40,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -197, 510, 600))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 724, 607))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
@@ -100,8 +114,8 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.spnZoomMax, 1, 1, 1, 1)
         self.verticalLayout_2.addWidget(self.groupBox_3)
         self.grpParameters = QgsCollapsibleGroupBox(self.scrollAreaWidgetContents)
-        self.grpParameters.setProperty("collapsed", True)
-        self.grpParameters.setProperty("saveCollapsedState", True)
+        self.grpParameters.setCollapsed(True)
+        self.grpParameters.setSaveCollapsedState(True)
         self.grpParameters.setObjectName(_fromUtf8("grpParameters"))
         self.gridlayout = QtGui.QGridLayout(self.grpParameters)
         self.gridlayout.setObjectName(_fromUtf8("gridlayout"))
@@ -187,32 +201,32 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "QTiles", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Output", None, QtGui.QApplication.UnicodeUTF8))
-        self.rbOutputZip.setText(QtGui.QApplication.translate("Dialog", "File", None, QtGui.QApplication.UnicodeUTF8))
-        self.btnBrowse.setText(QtGui.QApplication.translate("Dialog", "Browse...", None, QtGui.QApplication.UnicodeUTF8))
-        self.rbOutputDir.setText(QtGui.QApplication.translate("Dialog", "Directory", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("Dialog", "Tileset name", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("Dialog", "Extent", None, QtGui.QApplication.UnicodeUTF8))
-        self.rbExtentCanvas.setText(QtGui.QApplication.translate("Dialog", "Canvas extent", None, QtGui.QApplication.UnicodeUTF8))
-        self.rbExtentFull.setText(QtGui.QApplication.translate("Dialog", "Full extent", None, QtGui.QApplication.UnicodeUTF8))
-        self.rbExtentLayer.setText(QtGui.QApplication.translate("Dialog", "Layer extent", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("Dialog", "Zoom", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Dialog", "Minimum zoom", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("Dialog", "Maximum zoom", None, QtGui.QApplication.UnicodeUTF8))
-        self.grpParameters.setTitle(QtGui.QApplication.translate("Dialog", "Parameters", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("Dialog", "Tile width", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkLockRatio.setText(QtGui.QApplication.translate("Dialog", "Lock 1:1 ratio", None, QtGui.QApplication.UnicodeUTF8))
-        self.lblHeight.setText(QtGui.QApplication.translate("Dialog", "Tile height", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkAntialiasing.setText(QtGui.QApplication.translate("Dialog", "Make lines appear less jagged at the expence of some drawing performance", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkTMSConvention.setText(QtGui.QApplication.translate("Dialog", "Use TMS tiles convention (Slippy Map by default)", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkWriteMapurl.setText(QtGui.QApplication.translate("Dialog", "Write .mapurl file", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkWriteViewer.setText(QtGui.QApplication.translate("Dialog", "Write Leaflet-based viewer", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("Dialog", "Format", None, QtGui.QApplication.UnicodeUTF8))
-        self.cmbFormat.setItemText(0, QtGui.QApplication.translate("Dialog", "PNG", None, QtGui.QApplication.UnicodeUTF8))
-        self.cmbFormat.setItemText(1, QtGui.QApplication.translate("Dialog", "JPG", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("Dialog", "Background transparency", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("Dialog", "Quality", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("Dialog", "(0-100)", None, QtGui.QApplication.UnicodeUTF8))
+        Dialog.setWindowTitle(_translate("Dialog", "QTiles", None))
+        self.groupBox.setTitle(_translate("Dialog", "Output", None))
+        self.rbOutputZip.setText(_translate("Dialog", "File", None))
+        self.btnBrowse.setText(_translate("Dialog", "Browse...", None))
+        self.rbOutputDir.setText(_translate("Dialog", "Directory", None))
+        self.label_4.setText(_translate("Dialog", "Tileset name", None))
+        self.groupBox_2.setTitle(_translate("Dialog", "Extent", None))
+        self.rbExtentCanvas.setText(_translate("Dialog", "Canvas extent", None))
+        self.rbExtentFull.setText(_translate("Dialog", "Full extent", None))
+        self.rbExtentLayer.setText(_translate("Dialog", "Layer extent", None))
+        self.groupBox_3.setTitle(_translate("Dialog", "Zoom", None))
+        self.label.setText(_translate("Dialog", "Minimum zoom", None))
+        self.label_2.setText(_translate("Dialog", "Maximum zoom", None))
+        self.grpParameters.setTitle(_translate("Dialog", "Parameters", None))
+        self.label_3.setText(_translate("Dialog", "Tile width", None))
+        self.chkLockRatio.setText(_translate("Dialog", "Lock 1:1 ratio", None))
+        self.lblHeight.setText(_translate("Dialog", "Tile height", None))
+        self.chkAntialiasing.setText(_translate("Dialog", "Make lines appear less jagged at the expence of some drawing performance", None))
+        self.chkTMSConvention.setText(_translate("Dialog", "Use TMS tiles convention (Slippy Map by default)", None))
+        self.chkWriteMapurl.setText(_translate("Dialog", "Write .mapurl file", None))
+        self.chkWriteViewer.setText(_translate("Dialog", "Write Leaflet-based viewer", None))
+        self.label_6.setText(_translate("Dialog", "Format", None))
+        self.cmbFormat.setItemText(0, _translate("Dialog", "PNG", None))
+        self.cmbFormat.setItemText(1, _translate("Dialog", "JPG", None))
+        self.label_5.setText(_translate("Dialog", "Background transparency", None))
+        self.label_7.setText(_translate("Dialog", "Quality", None))
+        self.label_8.setText(_translate("Dialog", "(0-100)", None))
 
 from qgis.gui import QgsCollapsibleGroupBox

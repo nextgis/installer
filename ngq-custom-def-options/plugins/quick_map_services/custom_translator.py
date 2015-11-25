@@ -30,12 +30,15 @@ class CustomTranslator(QTranslator):
         self.__translates = {}
 
     def append(self, text, translation):
-        self.__translates[text] = translation
+        if text and translation:
+            self.__translates[text] = translation
 
     def clear_translations(self):
         self.__translates.clear()
 
     def translate(self, context, text, disambiguation):
-        if text in self.__translates.keys():
-            return self.__translates[text]
-        return ''
+        try:
+            if isinstance(text, str) and text in self.__translates.keys():
+                return self.__translates[text]
+        except:
+            return ''

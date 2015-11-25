@@ -34,8 +34,6 @@ from ui_attributestable import Ui_AttributesTable
 from ui_attributestablewithimages import Ui_AttributesTableWithImages
 from ui_identifyplusresultsbase import Ui_IdentifyPlusResults
 
-from identifyplusmodel import IdentifyPlusModel
-
 from representations import RepresentationContainer
 
 class IdentifyPlusResults(QWidget, Ui_IdentifyPlusResults):
@@ -50,7 +48,7 @@ class IdentifyPlusResults(QWidget, Ui_IdentifyPlusResults):
         self._qgsMapCanvas = qgsMapCanvas
         
         self._objects = list()
-        self.currentObjectIndex = 0
+        self.currentObjectIndex = -1
         
         self.btnFirstRecord.clicked.connect(self.firstRecord)
         self.btnLastRecord.clicked.connect(self.lastRecord)
@@ -69,10 +67,35 @@ class IdentifyPlusResults(QWidget, Ui_IdentifyPlusResults):
         
         self.progressBar.setVisible(False)
         self.pushButton.setVisible(False)
+        self.lblIdentifyStatus.setVisible(False)
         
         self.thread = None;
         self.worker = None;
-        
+    
+    def setModel(self, model):
+        self.__model = model
+        self.__model.identificationProgress.connect(self.identifyProgressHandel)
+        self.__model.identificationLayer.connect(self.identifyMessageHandel)
+        self.__model.finished.connect(self.identifyFinishedHandel)
+        self.__model.reseted.connect(self.modelResetHandel)
+        self.__model.objectsAppended.connect(self.modelAppendObjectsHandel)
+    
+    def identifyMessageHandel(self, layerName):
+         self.lblIdentifyStatus.setText( self.tr("Process layer: %s")%layerName )
+    
+    def identifyProgressHandel(self, i1, i2):
+        if i1 == 0:
+            self.progressBar.setVisible(True)
+            self.lblIdentifyStatus.setVisible(True)
+            self.progressBar.setRange(i1, i2)
+        else:
+            self.progressBar.setValue(i1)
+    
+    def identifyFinishedHandel(self):
+        self.progressBar.setVisible(False)
+        self.lblIdentifyStatus.setVisible(False)
+        self.progressBar.setValue(0)
+    
     def modelChangeProcess(self):
         if len(self._model.objects) == 0:
             self.resetModelProcess()
@@ -82,17 +105,48 @@ class IdentifyPlusResults(QWidget, Ui_IdentifyPlusResults):
         if  self._model.state == self._model.IdentificationIsDone:
             self.finishedModelProcess()
     
+    def modelResetHandel(self):
+        self.currentObjectIndex = -1
+        
+        self.lblFeatures.setText(self.tr("Objects not found"))
+        
+        self.btnFirstRecord.setEnabled(False)
+        self.btnLastRecord.setEnabled(False)
+        self.btnNextRecord.setEnabled(False)
+        self.btnPrevRecord.setEnabled(False)
+            
+        self.representations.clear()
+        self.parent().show()
+    
+    def modelAppendObjectsHandel(self):
+        if self.__model.objectsCount() > 0:
+            self.btnFirstRecord.setEnabled(True)
+            self.btnLastRecord.setEnabled(True)
+            self.btnNextRecord.setEnabled(True)
+            self.btnPrevRecord.setEnabled(True)
+            
+            self.updateInterface()
+            if self.currentObjectIndex == -1:
+                self.firstRecord()
+        else:
+            self.lblFeatures.setText(self.tr("Objects not found"))
+            self.btnFirstRecord.setEnabled(False)
+            self.btnLastRecord.setEnabled(False)
+            self.btnNextRecord.setEnabled(False)
+            self.btnPrevRecord.setEnabled(False)
+            QgsMessageLog.logMessage(self.tr("Objects not found"), u'IdentifyPlus', QgsMessageLog.WARNING)
+            
     def firstRecord(self):
         self.currentObjectIndex = 0
         self._loadFeatureAttributes()
         
     def lastRecord(self):
-        self.currentObjectIndex = len(self._objects) - 1
+        self.currentObjectIndex = self.__model.objectsCount() - 1
         self._loadFeatureAttributes()
 
     def nextRecord(self):
         self.currentObjectIndex += 1
-        if self.currentObjectIndex >= len(self._objects):
+        if self.currentObjectIndex >= self.__model.objectsCount():
           self.currentObjectIndex = 0
         
         self._loadFeatureAttributes()
@@ -100,92 +154,21 @@ class IdentifyPlusResults(QWidget, Ui_IdentifyPlusResults):
     def prevRecord(self):
         self.currentObjectIndex = self.currentObjectIndex - 1
         if self.currentObjectIndex < 0:
-          self.currentObjectIndex = len(self._objects) - 1
+            self.currentObjectIndex = self.__model.objectsCount() - 1
     
         self._loadFeatureAttributes()
     
     def _loadFeatureAttributes(self):
+        self.updateInterface()
+        obj = self.__model.data(self.currentObjectIndex)
+        self.representations.takeControl(obj)
+    
+    def updateInterface(self):
         self.lblFeatures.setText(
             self.tr("Feature %s from %s (%s)") % (
                 self.currentObjectIndex + 1, 
-                len(self._objects),
-                self._objects[self.currentObjectIndex][1].name() ))
-        self.representations.takeControl(self._objects[self.currentObjectIndex])
-    
-    @pyqtSlot(QgsPoint)
-    def identify(self, qgsPoint):
-        if self.thread != None:
-            return
-        
-        del self._objects[:]
-        self.currentObjectIndex = 0
-        if not self.isVisible():
-            self.setVisible(True)
-        
-        self.progressBar.setValue(0)
-        self.progressBar.setVisible(True)
-        #self.pushButton.setVisible(True)
-        
-        self.representations.setVisible(False)
-        
-        worker = IdentifyPlusModel(self._qgsMapCanvas)
-        worker.setIdentificationSettings(qgsPoint)
-        
-        # start the worker in a new thread
-        thread = QThread(self)
-        worker.moveToThread(thread)
-        worker.finished.connect(self.workerFinished)
-        worker.error.connect(self.workerError)
-        worker.progress.connect(self.workerProcess)
-        thread.started.connect(worker.identification)
-        thread.start()
-        
-        self.thread = thread
-        self.worker = worker
-    
-    @pyqtSlot(float, list)
-    def workerProcess(self,  progress, objects):
-        self.progressBar.setValue(progress)
-        
-        if len(objects) != 0:
-            self._objects.extend(objects)
-            self.lblFeatures.setText(
-                self.tr("Feature %s from %s (%s)") % (
-                    self.currentObjectIndex + 1, 
-                    len(self._objects),
-                    self._objects[self.currentObjectIndex][1].name() ))
-    
-    
-    def workerError(self, Exception, msg):
-        QgsMessageLog.logMessage(self.tr("%s: %s")%(Exception, msg), u'IdentifyPlus', QgsMessageLog.CRITICAL)
-        
-    def workerFinished(self):
-        self.worker.deleteLater()
-        self.thread.quit()
-        self.thread.wait()
-        self.thread.deleteLater()
-        
-        self.worker = None
-        self.thread = None
-        
-        self.progressBar.setVisible(False)
-        #self.pushButton.setVisible(False)
-        
-        if len(self._objects) != 0:
-            self._loadFeatureAttributes()
-            self.btnFirstRecord.setEnabled(True)
-            self.btnLastRecord.setEnabled(True)
-            self.btnNextRecord.setEnabled(True)
-            self.btnPrevRecord.setEnabled(True)
-            
-            self.representations.setVisible(True)
-        else:
-            self.lblFeatures.setText(self.tr("No features"))
-            self.btnFirstRecord.setEnabled(False)
-            self.btnLastRecord.setEnabled(False)
-            self.btnNextRecord.setEnabled(False)
-            self.btnPrevRecord.setEnabled(False)
-            QgsMessageLog.logMessage(self.tr("Objects not found"), u'IdentifyPlus', QgsMessageLog.WARNING)
+                self.__model.objectsCount(),
+                self.__model.data(self.currentObjectIndex).qgsMapLayer.name() ))
         
 class IdentifyPlusResultsDock(QDockWidget):
     def __init__(self, model):

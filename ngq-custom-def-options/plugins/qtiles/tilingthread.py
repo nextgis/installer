@@ -26,6 +26,7 @@
 #******************************************************************************
 import math
 import time
+import codecs
 from string import Template
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -79,7 +80,6 @@ class TilingThread(QThread):
         self.scaleCalc.setDpi(image.logicalDpiX())
         self.scaleCalc.setMapUnits(QgsCoordinateReferenceSystem('EPSG:3395').mapUnits())
         self.settings = QgsMapSettings()
-        self.settings.setLayers(self.layers)
         self.settings.setBackgroundColor(self.color)
         self.settings.setCrsTransformEnabled(True)
         self.settings.setOutputDpi(image.logicalDpiX())
@@ -87,9 +87,11 @@ class TilingThread(QThread):
         self.settings.setDestinationCrs(QgsCoordinateReferenceSystem('EPSG:3395'))
         self.settings.setOutputSize(image.size())
         self.settings.setLayers(self.layers)
-        self.settings.setFlag(QgsMapSettings.DrawLabeling, True)
+        self.settings.setMapUnits(QgsCoordinateReferenceSystem('EPSG:3395').mapUnits())
         if self.antialias:
             self.settings.setFlag(QgsMapSettings.Antialiasing, True)
+        else:
+            self.settings.setFlag(QgsMapSettings.DrawLabeling, True)
     def run(self):
         self.mutex.lock()
         self.stopMe = 0
@@ -103,7 +105,7 @@ class TilingThread(QThread):
         elif self.mode == 'ZIP':
             self.writer = ZipWriter(self.output, self.rootDir)
         elif self.mode == 'MBTILES':
-            self.writer = MBTilesWriter(self.output, self.rootDir)
+            self.writer = MBTilesWriter(self.output, self.rootDir,self.format,self.minZoom,self.maxZoom,self.extent)
         self.rangeChanged.emit(self.tr('Searching tiles...'), 0)
         useTMS = 1
         if self.tmsConvention:
@@ -146,11 +148,22 @@ class TilingThread(QThread):
         templateFile = QFile(':/resources/viewer.html')
         if templateFile.open(QIODevice.ReadOnly | QIODevice.Text):
             viewer = MyTemplate(unicode(templateFile.readAll()))
+
             tilesDir = '%s/%s' % (self.output.absoluteFilePath(), self.rootDir)
             useTMS = 'true' if self.tmsConvention else 'false'
-            substitutions = {'tilesdir': tilesDir, 'tilesetname': self.rootDir, 'tms': useTMS, 'centerx': self.extent.center().x(),'centery': self.extent.center().y(),'avgzoom': (self.maxZoom + self.minZoom) / 2,'maxzoom': self.maxZoom}
+            substitutions = {
+                'tilesdir': tilesDir,
+                'tilesext': self.format.lower(),
+                'tilesetname': self.rootDir,
+                'tms': useTMS,
+                'centerx': self.extent.center().x(),
+                'centery': self.extent.center().y(),
+                'avgzoom': (self.maxZoom + self.minZoom) / 2,
+                'maxzoom': self.maxZoom
+            }
+
             filePath = '%s/%s.html' % (self.output.absoluteFilePath(), self.rootDir)
-            with open(filePath, 'w') as fOut:
+            with codecs.open(filePath, 'w', 'utf-8') as fOut:
                 fOut.write(viewer.substitute(substitutions))
             templateFile.close()
     def countTiles(self, tile):
@@ -169,13 +182,29 @@ class TilingThread(QThread):
                         return
                     subTile = Tile(x, y, tile.z + 1, tile.tms)
                     self.countTiles(subTile)
+
     def render(self, tile):
-        scale = self.scaleCalc.calculate(self.projector.transform(tile.toRectangle()), self.width)
+        # scale = self.scaleCalc.calculate(
+        #    self.projector.transform(tile.toRectangle()), self.width)
+
         self.settings.setExtent(self.projector.transform(tile.toRectangle()))
-        job = QgsMapRendererSequentialJob(self.settings)
-        job.start()
-        job.waitForFinished()
-        image = job.renderedImage()
+
+        image = QImage(self.settings.outputSize(), QImage.Format_ARGB32)
+        image.fill(Qt.transparent)
+
+        dpm = self.settings.outputDpi() / 25.4 * 1000
+        image.setDotsPerMeterX(dpm)
+        image.setDotsPerMeterY(dpm)
+
+        # job = QgsMapRendererSequentialJob(self.settings)
+        # job.start()
+        # job.waitForFinished()
+        # image = job.renderedImage()
+
+        painter = QPainter(image)
+        job = QgsMapRendererCustomPainterJob(self.settings, painter)
+        job.renderSynchronously()
+        painter.end()
         self.writer.writeTile(tile, image, self.format, self.quality)
 
 class MyTemplate(Template):

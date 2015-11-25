@@ -23,256 +23,121 @@
 # to the Free Software Foundation, 51 Franklin Street, Suite 500 Boston,
 # MA 02110-1335 USA.
 #
-#******************************************************************************
-import numbers
+#******************************************************************************eimport time
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from PyQt4 import QtDeclarative
-
 from qgis.core import *
 from qgis.gui import *
 
-from ui_attributestable import Ui_AttributesTable
+from ngw_external_api_python.core.ngw_utils import ngw_resource_from_qgs_map_layer
 
-from imagegallery.image_gallery import ImageGalleryWidget, ImagesListModel, Image
-from identifyplusutils import getImageByURL
-from ngwapi import ngwapi
+from representation_qgis import QGISAttributesModel, QGISAttributesView
+from representation_ngw import NGWImagesModel, NGWImagesView
 
-import functools
+class DataProvider(object):
+    def __init__(self, name, priority):
+        self.__name = name
+        self.__priority = priority
+    
+    def __str__(self):
+        return self.__name + " data provider"
+    def __repr__(self):
+        return self.__name + " data provider"
+    
+    @property
+    def name(self):
+        return self.__name
+    
+    @property
+    def priority(self):
+        return self.__priority
+    
+class QGISDataProvider(DataProvider):
+    def __init__(self):
+        DataProvider.__init__(self, "qgis", 0)
+
+class NGWDataProvider(DataProvider):
+    def __init__(self, ngw_resource):
+        DataProvider.__init__(self, "ngw", 1)
+        self.__ngw_resource = ngw_resource
+        
+    @property
+    def ngw_resource(self):
+        return self.__ngw_resource
+    
+def provider_definition(qgsMapLayer):
+    provides = [ QGISDataProvider() ]
+    
+    #if qgsMapLayer.type() == QgsMapLayer.RasterLayer:
+    #    provides.append(GDALDataProvider())
+        
+    if qgsMapLayer.type() == QgsMapLayer.VectorLayer:
+        
+        ngw_resource = ngw_resource_from_qgs_map_layer(qgsMapLayer)        
+        if ngw_resource is not None:            
+            provides.append(NGWDataProvider(ngw_resource))
+    
+    return provides
+
+class RepresentationsCache(object):
+    def __init__(self):
+        self.repr_variants = list()
+        self.indexes = list()
+        self.correspondences = dict()
+        
+    def save(self, representations, index):
+        if representations not in self.repr_variants:
+            self.repr_variants.append(representations)
+        
+        reprs_index = self.repr_variants.index(representations)
+        self.correspondences.update({reprs_index:index})
+    
+    def getIndex(self, representations):
+        if representations in self.repr_variants:
+            return self.correspondences[self.repr_variants.index(representations)]
+        else:
+            return 0
 
 class RepresentationContainer(QTabWidget):
     def __init__(self, parent = None):
         QTabWidget.__init__(self, parent)
-        self.representations = list()
         self.threades = list()
         
-    def takeControl(self, (obj, qgsMapLayer, representations)):
-        existingReprs = []
-        reprsClasses = [repr[0] for repr in representations]
-        for i in range(0,  self.count())[::-1]:
-            if type(self.widget(i)) in reprsClasses:
-                #self.widget(i).takeControl(obj, qgsMapLayer, representations[i][1])
-                self.__transferControl(
-                    self.widget(i),
-                    obj,
-                    qgsMapLayer,
-                    representations[reprsClasses.index(type(self.widget(i)))][1]
-                )
-                existingReprs.append( type(self.widget(i)) )
-            else:
-                self.removeTab(i)
-        
-        newReprsClasses = list(set(reprsClasses) - set(existingReprs))
-        
-        for reprClass in newReprsClasses:
-            representation = reprClass(self)
-            self.addTab(representation, representation.reprName)
-            #representation.takeControl( obj, qgsMapLayer, repr[1])
-            self.__transferControl(representation, obj, qgsMapLayer, representations[reprsClasses.index(reprClass)][1])    
-
-    def __transferControl(self, representation, obj, qgsMapLayer, reprAttrs):
-        #representation.takeControl(obj, qgsMapLayer, reprAttrs)
-        thread = QThread(self)
-        representation.moveToThread(thread)
-
-        thread.started.connect( functools.partial(representation.takeControl, obj, qgsMapLayer, reprAttrs) )
-        representation.finished.connect(thread.quit)
-        thread.finished.connect(thread.deleteLater)
-        thread.start()
-        
-        self.threades.append(thread)
-        
-class DictView(QWidget, Ui_AttributesTable):
-    finished = pyqtSignal()
-    mainfields = [u'layerId', u'layerName']
-    def __init__(self, parent = None):
-        QWidget.__init__(self, parent)
-        self.reprName = self.tr("attributes")
-        self.setupUi(self)
-        
-        self.tblAttributes.verticalHeader().setResizeMode(QHeaderView.ResizeToContents)
-        
-        self.labels = []
-
-    def takeControl(self, dictAttributes, qgsMapLayer, representationsData):
-        if not isinstance(dictAttributes, dict):
-            raise AttributeError("dictAttributes is not dict")
-        
-        for l in self.labels:
-            l.close()
-        
-        self.tblAttributes.clear()
-        self.tblAttributes.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Value")])
-        #self.tblAttributes.setRowCount(len(dictAttributes))
-        self.tblAttributes.setRowCount(0)
-        self.tblAttributes.setColumnCount(2)
-        
-        
-        row = 0
-        
-        font = QFont()
-        font.setWeight(75)
-        font.setBold(True)
-        
-        for fieldName, fieldValue in dictAttributes.items():            
-            itemFieldName = QTableWidgetItem(fieldName)
-            itemFieldValue = QTableWidgetItem(fieldValue)
+        self.reprs_cashe = RepresentationsCache()
+    
+        self.currentChanged.connect(self.tabChangedHandle)
+    
+    def allReprs(self):
+        reprs = []
+        for i in range( 0, self.count() ):
+            reprs.append(type(self.widget(i)))
+        return reprs
+    
+    def tabChangedHandle(self, index):
+        self.reprs_cashe.save(self.allReprs(), index) 
+    
+    def takeControl(self, obj):
+        self.clear()
+        for provider in obj.providers:
+            if isinstance(provider, QGISDataProvider):
+                repr_widget = QGISAttributesView(self)                
+                repr_widget.setModel(QGISAttributesModel(obj))
+                tab_index = self.addTab(repr_widget, self.tr("Attributes"))
             
-            rowIndex = row
-            if fieldName in self.mainfields:
-                itemFieldName.setFont(font)
-                itemFieldValue.setFont(font)
-                rowIndex = 0
-            
-            self.tblAttributes.insertRow(rowIndex)
-            self.tblAttributes.setItem(rowIndex, 1, itemFieldValue )
-            self.tblAttributes.setItem(rowIndex, 0, itemFieldName )
+            if isinstance(provider, NGWDataProvider):
+                #startTime = time.time()
                 
-            row += 1
-        self.finished.emit()
-
-class AttributesView(QWidget, Ui_AttributesTable):
-    finished = pyqtSignal()
-    def __init__(self, parent = None):
-        QWidget.__init__(self, parent)
-        self.reprName = self.tr("attributes")
-        self.setupUi(self)
-        
-        self.tblAttributes.verticalHeader().setResizeMode(QHeaderView.ResizeToContents)
-
-    def takeControl(self, qgsFeature, qgsMapLayer, representationsData):
-        if not isinstance(qgsFeature, QgsFeature):
-            raise AttributeError("qgsMapCanvas is not qgis._core.QgsFeature")
-
-        attrs = {}
-
-        qgsAttrs = qgsFeature.attributes()
-        fields = qgsFeature.fields().toList()
-        for i in xrange(len(qgsAttrs)):
-            attrs[fields[i].name()] = qgsAttrs[i]
-
-        self.tblAttributes.clear()
-        self.tblAttributes.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Value")])
-        self.tblAttributes.setRowCount(len(attrs))
-        self.tblAttributes.setColumnCount(2)
-        
-        row = 0
-        for fieldName, fieldValue in attrs.items():
-            item = QTableWidgetItem(fieldName)
-            self.tblAttributes.setItem(row, 0, item )
+                repr_widget = NGWImagesView(self)
+                tab_index = self.addTab(repr_widget, self.tr("Photos") + " (ngw)")
+                model = NGWImagesModel(obj, provider.ngw_resource)                                  
+                repr_widget.setModel( model )
             
-            if isinstance(fieldValue, QPyNullVariant):
-                item = QTableWidgetItem("NULL")
-                
-            elif isinstance(fieldValue, QVariant):
-                item = QTableWidgetItem(attrs[i].toString())
-                
-            else:
-              if isinstance(fieldValue, numbers.Number):
-                item = QTableWidgetItem(str(fieldValue))
-              else:
-                item = QTableWidgetItem(fieldValue)
+        self.setCurrentIndex(self.reprs_cashe.getIndex(self.allReprs()))
             
-            self.tblAttributes.setItem(row, 1, item )
-            row += 1
-        self.finished.emit()
-
-
-class NGWImages(ImageGalleryWidget):
-    finished = pyqtSignal()
-    def __init__(self, parent = None):
-        self.images_model = ImagesListModel()
-        ImageGalleryWidget.__init__(
-            self,
-            self.images_model,
-            QApplication.translate("NGWImages", "No photos", None, QApplication.UnicodeUTF8),
-            parent)
-        
-        self.reprName = self.tr("images")
-        
-        self.addImages.connect(self.addPhotos)
-        self.deleteImage.connect(self.deletePhoto)
-        self.downloadImage.connect(self.downloadPhoto)
-        self.downloadAllImages.connect(self.downloadPhotos)
-
-
-    def takeControl(self, qgsFeature, qgsMapLayer, representationsData):
-        self.images_model.clean()
-        ngwResource = ngwapi.getNGWResource(representationsData[u"baseURL"], representationsData[u"resourceId"], representationsData[u"auth"])
-
-        ngwResource4identify = None
-
-        if isinstance(ngwResource, ngwapi.NGWResourceWFS):
-            resourceId4identify = ngwResource.getLayerResourceIDByKeyname(representationsData[u'LayerName'])
-            ngwResource4identify = ngwapi.getNGWResource(ngwResource.baseURL, resourceId4identify, representationsData[u'auth'])
-            
-        elif isinstance(ngwResource, ngwapi.NGWResourceVectorLayer):
-            ngwResource4identify = ngwResource
-        
-        fid = qgsFeature.id()
-        if qgsMapLayer.dataProvider().name() == u'WFS':
-            fid = fid + 1
-            
-        imagesIds = ngwapi.ngwIdentification(ngwResource4identify, fid, representationsData[u'auth']).imagesIds
-        
-        images = []
-        for imageId in imagesIds:
-            url = ngwResource4identify.getURLForGetFeatureImage(fid, imageId)
-            images.append(Image( url ))
-
-        self.images_model.appendImages(images)
-        self.finished.emit()
-    
-    def downloadPhoto(self, imageURL):
-        settings = QSettings("Photos", "identifyplus")
-        lastDir = settings.value( "/lastPhotoDir", "." )
-    
-        fName = QFileDialog.getSaveFileName(self,
-                                            self.tr("Save image"),
-                                            lastDir,
-                                            self.tr("PNG files (*.png)")
-                                           )
-        if fName == "":
-          return
-    
-        if not fName.lower().endswith(".png"):
-          fName += ".png"
-        
-        img = getImageByURL(imageURL, None)
-        img.save(fName)
-            
-        settings.setValue("/lastPhotoDir", QFileInfo(fName).absolutePath())
-    
-    def deletePhoto(self):
-        self.showMessage(self.tr("The delete photo operation is not available"))
-
-    def downloadPhotos(self):
-        settings = QSettings("Photos", "identifyplus")
-        lastDir = settings.value( "/lastPhotoDir", "." )
-    
-        dirName = QFileDialog.getExistingDirectory(self,
-                                                   self.tr("Select directory"),
-                                                   lastDir,
-                                                   QFileDialog.ShowDirsOnly
-                                                  )
-        if dirName == "":
-            return
-
-        for image in self.images_model.getAllImages():
-            url = image.url.toString()
-            img = getImageByURL(url, None)
-            img.save("%s/%s.png" % (dirName, "photo_%s"%url.split('/')[-1]))
-          
-        settings.setValue("/lastPhotoDir", QFileInfo(dirName).absolutePath())
-  
-    def addPhotos(self):
-        self.showMessage(self.tr("The add photo operation is not available"))
-    
-    def showMessage(self, message):
-        msgViewer = QgsMessageViewer(self)
-        msgViewer.setTitle(self.tr("IdentifyPlus message") )
-        msgViewer.setCheckBoxVisible(False)
-        msgViewer.setMessageAsHtml(message)
-        msgViewer.showMessage()
+    def clear(self):
+        for i in range( 0, self.count() ):
+            self.widget(0).hide()
+            self.widget(0).close()
+            self.removeTab(0)
