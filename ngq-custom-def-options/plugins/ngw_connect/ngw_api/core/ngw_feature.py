@@ -18,15 +18,24 @@
  *                                                                         *
  ***************************************************************************/
 """
-from os import path
-from ngw_resource import NGWResource
+FEATURE_URL = lambda res_id, feature_id: '/api/resource/%d/feature/%d' % (res_id, feature_id)
+FEATURE_ATTACHMENTS_URL = lambda res_id, feature_id: '/api/resource/%d/feature/%d/attachment/' % (res_id, feature_id)
 
-
-class NGWWmsService(NGWResource):
-
-    type_id = 'wmsserver_service'
-    icon_path = path.join(path.dirname(__file__), path.pardir, 'icons/', 'wms.svg')
-    type_title = 'NGW WMS Service'
-
-    def __init__(self, resource_factory, resource_json):
-        NGWResource.__init__(self, resource_factory, resource_json)
+class NGWFeature(object):
+    def __init__(self, feature_id, ngw_vector_layer):
+        self.id = feature_id
+        self.ngw_resource = ngw_vector_layer
+    
+    def get_feature_url(self):
+        return FEATURE_URL(self.ngw_resource.common.id, self.id)
+    
+    def get_feature_attachmets_url(self):
+        return FEATURE_ATTACHMENTS_URL(self.ngw_resource.common.id, self.id)
+    
+    def get_attachments(self):
+        return self.ngw_resource._res_factory.connection.get(self.get_feature_attachmets_url())
+    
+    def link_attachment(self, uploaded_file_info):
+        json_data= dict(file_upload = uploaded_file_info)
+        res = self.ngw_resource._res_factory.connection.post(self.get_feature_attachmets_url(), json=json_data)
+        return res[u'id']

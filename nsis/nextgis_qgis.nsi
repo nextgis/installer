@@ -1,5 +1,11 @@
 ; define by auto build system ======
 ; ==================================
+;!define PROGRAM_NAME_RU "Компьюлинк"
+;!define SMPROGRAMS_FOLDER_NAME_EN "Compulink"
+;!define SMPROGRAMS_FOLDER_NAME_RU "Компьюлинк"
+;!define NextGIS_QGIS_RUN_LNK_NAME_EN "Compulink (${PROGRAM_VERSION})"
+;!define NextGIS_QGIS_RUN_LNK_NAME_RU "Компьюлинк (${PROGRAM_VERSION})"
+
 !ifndef PROGRAM_NAME_EN
 	!ifdef PROGRAM_NAME
 		!define PROGRAM_NAME_EN "${PROGRAM_NAME}"

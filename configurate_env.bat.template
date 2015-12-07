@@ -35,4 +35,11 @@ rem set GRASS_SRC_DIR="E:\builds\env\osgeo4w-grass"
 rem SAGA_SRC_DIR is optional
 rem set SAGA_SRC_DIR="E:\builds\env\osgeo4w-saga"
 
+rem OCI_DIR is optional
+set OCI_DIR=c:\OSGeo4W-other\oci
+set INCLUDE=%OCI_DIR%\include;%INCLUDE%
+set LIB=%OCI_DIR%\lib;%LIB%
+path %OCI_DIR%\bin;%PATH%
+set NGQ_WITH_ORACLE=TRUE
+
 echo "======== Configurate env  Finish==========="

@@ -78,7 +78,8 @@ class NGWResource():
         if self.common.owner_user:
             self.common.owner_user = DICT_TO_OBJ(self.common.owner_user)
         #resmeta
-        self.metadata = DICT_TO_OBJ(self._json['resmeta'])
+        if 'resmeta' in self._json:
+            self.metadata = DICT_TO_OBJ(self._json['resmeta'])
 
     def get_parent(self):
         if self.common.parent:
@@ -96,6 +97,9 @@ class NGWResource():
 
     def get_absolute_url(self):
         return self._res_factory.connection.server_url + RESOURCE_URL(self.common.id)
+
+    def get_absolute_api_url(self):
+        return self._res_factory.connection.server_url + API_RESOURCE_URL(self.common.id)
 
     def get_absolute_url_with_auth(self):
         creds = self._res_factory.connection.get_auth()
