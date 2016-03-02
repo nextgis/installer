@@ -328,6 +328,7 @@ RebootNecessary:
     SetRebootFlag true
 
 NoRebootNecessary:
+    SetOutPath "$INSTALL_DIR"
     Delete "$DESKTOP\$(NextGIS_QGIS_RUN_LNK_NAME).lnk"
     CreateShortCut "$DESKTOP\$(NextGIS_QGIS_RUN_LNK_NAME).lnk" "$INSTALL_DIR\bin\nircmd.exe" 'exec hide "$INSTALL_DIR\bin\qgis.bat"' \
     "$INSTALL_DIR\icons\${NextGIS_QGIS_RUN_LNK_ICO_FileName}" "" SW_SHOWNORMAL "" "$(RUN_QGIS) ${PROGRAM_NAME}"

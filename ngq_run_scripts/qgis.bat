@@ -1,4 +1,5 @@
 @echo off
+cd /d %~dp0
 call "%~dp0\o4w_env.bat"
 call "%OSGEO4W_ROOT%"\apps\grass\grass-6.4.4\etc\env.bat
 @echo off
