@@ -26,6 +26,9 @@ cmake -G "NMake Makefiles" ^
 -D CMAKE_BUILD_TYPE=Release ^
 -D CMAKE_INSTALL_PREFIX=%2 ^
 -D NGQ_BUILD_TYPE=%4 ^
+-D PYTHON_EXECUTABLE=%OSGEO4W_ROOT%\bin\python.exe ^
+-D SPATIALITE_LIBRARY=%OSGEO4W_ROOT%\lib\spatialite_i.lib ^
+-D ENABLE_TESTS=FALSE ^
 %3
 
 echo "======== Configurate ngq  Finish==========="
