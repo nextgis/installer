@@ -1,7 +1,6 @@
 {"ngq_plugins": [
     {"name": "identifyplus"},
-    {"name": "ngw_connect"},
-    {"name": "publish2ngw"},
+    {"name": "nextgis_connect"},
     {"name": "qgis2mobile"},
     {"name": "qtiles"},
     {"name": "quick_map_services"},

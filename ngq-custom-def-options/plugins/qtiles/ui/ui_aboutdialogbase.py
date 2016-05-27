@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/aboutdialogbase.ui'
+# Form implementation generated from reading ui file 'E:\dev\QTiles\ui\aboutdialogbase.ui'
 #
-# Created: Fri Sep 18 11:45:05 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 

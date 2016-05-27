@@ -22,20 +22,22 @@
 """
 
 
-
 class KNOWN_DRIVERS():
     WMS = 'WMS'
     TMS = 'TMS'
     GDAL = 'GDAL'
+    WFS = 'WFS'
+    GEOJSON = 'GeoJSON'
 
     ALL_DRIVERS = [
         WMS,
         TMS,
-        GDAL
+        GDAL,
+        WFS,
+        GEOJSON,
     ]
 
-    #'TiledWMS',
-    #'VirtualEarth',
-    #'WorldWind',
-    #'AGS'
-
+    # 'TiledWMS',
+    # 'VirtualEarth',
+    # 'WorldWind',
+    # 'AGS'

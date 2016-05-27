@@ -21,13 +21,16 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QTranslator
+from singleton import singleton
 
 
+@singleton
 class CustomTranslator(QTranslator):
 
     def __init__(self):
-        super(QTranslator, self).__init__()
+        QTranslator.__init__(self)
         self.__translates = {}
+
 
     def append(self, text, translation):
         if text and translation:
@@ -38,7 +41,8 @@ class CustomTranslator(QTranslator):
 
     def translate(self, context, text, disambiguation):
         try:
-            if isinstance(text, str) and text in self.__translates.keys():
+            if (isinstance(text, str) or isinstance(text, unicode)) and text in self.__translates.keys():
                 return self.__translates[text]
+            return ''
         except:
             return ''

@@ -20,7 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings
+from PyQt4.QtCore import QSettings, QDir, Qt
 
 
 class PluginSettings():
@@ -67,3 +67,41 @@ class PluginSettings():
     @classmethod
     def set_enable_otf_3857(cls, bool_val):
         return cls.get_settings().setValue('enable_otf_3857', bool_val)
+
+    @classmethod
+    def last_icon_path(cls):
+        return cls.get_settings().value('last_icon_path', QDir.homePath(), str)
+
+    @classmethod
+    def set_last_icon_path(cls, str_val):
+        return cls.get_settings().setValue('last_icon_path', str_val)
+
+    @classmethod
+    def set_hide_ds_id_list(cls, ds_id_list):
+        cls.get_settings().setValue('hide_ds_id_list_str', ";".join(ds_id_list))
+
+    @classmethod
+    def get_hide_ds_id_list(cls):
+        return cls.get_settings().value('hide_ds_id_list_str', '', str).split(";")
+
+    @classmethod
+    def server_dock_area(cls):
+        settings = cls.get_settings()
+        return settings.value('/ui/dockWidgetArea', Qt.RightDockWidgetArea,  type=int)
+
+    @classmethod
+    def set_server_dock_area(cls, val):
+        settings = cls.get_settings()
+        settings.setValue('/ui/dockWidgetArea', val)
+
+
+    @classmethod
+    def server_dock_visibility(cls):
+        settings = cls.get_settings()
+        return settings.value('/ui/dockWidgetIsVisible', True, type=bool)
+
+
+    @classmethod
+    def set_server_dock_visibility(cls, val):
+        settings = cls.get_settings()
+        settings.setValue('/ui/dockWidgetIsVisible', val)

@@ -27,6 +27,7 @@
 
 import sqlite3
 import zipfile
+import json
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -74,11 +75,71 @@ class ZipWriter:
         self.zipFile.close()
 
 
+class NGMArchiveWriter(ZipWriter):
+    def __init__(self, outputPath, rootDir):
+        ZipWriter.__init__(self, outputPath, "Mapnik")
+        self.levels = {}
+        self.__layerName = rootDir
+
+    def writeTile(self, tile, image, format, quality):
+        ZipWriter.writeTile(self, tile, image, format, quality)
+        level = self.levels.get(tile.z, {"x": [], "y": []})
+        level["x"].append(tile.x)
+        level["y"].append(tile.y)
+
+        self.levels[tile.z] = level
+
+    def finalize(self):
+        archive_info = {
+            "cache_size_multiply": 0,
+            "levels": [],
+            'max_level': max(self.levels.keys()),
+            'min_level': min(self.levels.keys()),
+            "name": self.__layerName,
+            "renderer_properties": {
+                "alpha": 255,
+                "antialias": True,
+                "brightness": 0,
+                "contrast": 1,
+                "dither": True,
+                "filterbitmap": True,
+                "greyscale": False,
+                "type": "tms_renderer"
+            },
+            "tms_type": 2,
+            "type": 32,
+            "visible": True
+        }
+
+        for level, coords in self.levels.items():
+            level_json = {
+                "level": level,
+                "bbox_maxx": max(coords["x"]),
+                "bbox_maxy": max(coords["y"]),
+                "bbox_minx": min(coords["x"]),
+                "bbox_miny": min(coords["y"]),
+            }
+
+            archive_info["levels"].append(level_json)
+
+        tempFile = QTemporaryFile()
+        tempFile.setAutoRemove(False)
+        tempFile.open(QIODevice.WriteOnly)
+        tempFile.write(json.dumps(archive_info))
+        tempFileName = tempFile.fileName()
+        tempFile.close()
+
+        self.zipFile.write(tempFileName, "%s.json" % self.rootDir)
+
+        ZipWriter.finalize(self)
+
+
 class MBTilesWriter:
 
-    def __init__(self, outputPath, rootDir, formatext, minZoom, maxZoom, extent):
+    def __init__(self, outputPath, rootDir, formatext, minZoom, maxZoom, extent, compression):
         self.output = outputPath
         self.rootDir = rootDir
+        self.compression = compression
         s = str(extent.xMinimum()) + ',' + str(extent.yMinimum()) + ',' + str(extent.xMaximum()) + ','+ str(extent.yMaximum())
         self.connection = mbtiles_connect(unicode(self.output.absoluteFilePath()))
         self.cursor = self.connection.cursor()
@@ -105,5 +166,16 @@ class MBTilesWriter:
     def finalize(self):
         optimize_database(self.connection)
         self.connection.commit()
+        if self.compression:
+            # start compression
+            compression_prepare(self.cursor, self.connection)
+            self.cursor.execute("select count(zoom_level) from tiles")
+            res = self.cursor.fetchone()
+            total_tiles = res[0]
+            compression_do(self.cursor, self.connection, total_tiles)
+            compression_finalize(self.cursor)
+            optimize_database(self.connection)
+            self.connection.commit()
+            # end compression
         self.connection.close()
         self.cursor = None

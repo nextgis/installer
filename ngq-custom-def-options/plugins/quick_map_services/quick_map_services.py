@@ -21,6 +21,7 @@
  ***************************************************************************/
 """
 import os.path
+import urlparse
 import xml.etree.ElementTree as ET
 
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
@@ -28,20 +29,21 @@ from PyQt4.QtGui import QAction, QIcon, QToolButton, QMenu, QMessageBox, QDialog
 # Initialize Qt resources from file resources.py
 #import resources_rc
 # Import the code for the dialog
-from qgis.core import QgsRasterLayer, QgsMessageLog, QgsMapLayerRegistry, QgsProject, QgsPluginLayerRegistry
+from qgis.core import QgsProject, QgsPluginLayerRegistry
 from qgis.gui import QgsMessageBar
 import sys
 from extra_sources import ExtraSources
+from locale import Locale
 from plugin_settings import PluginSettings
+from qgis_map_helpers import add_layer_to_map
+from qms_service_toolbox import QmsServiceToolbox
 
 from settings_dialog import SettingsDialog
 from about_dialog import AboutDialog
 from py_tiled_layer.tilelayer import TileLayer, TileLayerType
-from py_tiled_layer.tiles import TileServiceInfo
 from data_sources_list import DataSourcesList
-from ds_groups_list import DsGroupsList
+from groups_list import GroupsList
 from custom_translator import CustomTranslator
-from supported_drivers import KNOWN_DRIVERS
 
 
 class QuickMapServices:
@@ -58,12 +60,12 @@ class QuickMapServices:
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
+        self.plugin_dir = os.path.dirname(__file__).decode(sys.getfilesystemencoding())
 
         # initialize locale
         self.translator = QTranslator()
 
-        self.locale = QSettings().value('locale/userLocale')[0:2]
+        self.locale = Locale.get_locale()
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
@@ -101,14 +103,19 @@ class QuickMapServices:
         return QCoreApplication.translate('QuickMapServices', message)
 
     def initGui(self):
-        # import pydevd
-        # pydevd.settrace('localhost', port=9921, stdoutToServer=True, stderrToServer=True, suspend=False)
+        #import pydevd
+        #pydevd.settrace('localhost', port=9921, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         # Register plugin layer type
         self.tileLayerType = TileLayerType(self)
         QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
 
         # Create menu
+        icon_path = self.plugin_dir + '/icons/mActionAddLayer.png'
+        self.menu = QMenu(self.tr(u'QuickMapServices'))
+        self.menu.setIcon(QIcon(icon_path))
+        
+        self.init_server_panel()
         self.build_menu_tree()
 
         # add to QGIS menu/toolbars
@@ -160,58 +167,15 @@ class QuickMapServices:
             # ???? no way to update: http://hub.qgis.org/issues/11917
 
     def insert_layer(self):
-        #TODO: need factory!
         action = self.menu.sender()
         ds = action.data()
-        if ds.type == KNOWN_DRIVERS.TMS:
-            service_info = TileServiceInfo(self.tr(ds.alias), ds.copyright_text, ds.tms_url)
-            service_info.zmin = ds.tms_zmin or service_info.zmin
-            service_info.zmax = ds.tms_zmax or service_info.zmax
-            if ds.tms_y_origin_top is not None:
-                service_info.yOriginTop = ds.tms_y_origin_top
-            service_info.epsg_crs_id = ds.tms_epsg_crs_id
-            service_info.postgis_crs_id = ds.tms_postgis_crs_id
-            service_info.custom_proj = ds.tms_custom_proj
-            layer = TileLayer(self, service_info, False)
-        if ds.type == KNOWN_DRIVERS.GDAL:
-            layer = QgsRasterLayer(ds.gdal_source_file, self.tr(ds.alias))
-        if ds.type == KNOWN_DRIVERS.WMS:
-            qgis_wms_uri = u''
-            if ds.wms_params:
-                qgis_wms_uri += ds.wms_params
-            if ds.wms_layers:
-                layers = ds.wms_layers.split(',')
-                if layers:
-                    if ds.wms_turn_over:
-                        layers.reverse()
-                    qgis_wms_uri += '&layers='+'&layers='.join(layers)+'&styles='*len(layers)
-            qgis_wms_uri += '&url=' + ds.wms_url
-            layer = QgsRasterLayer(qgis_wms_uri, self.tr(ds.alias), KNOWN_DRIVERS.WMS.lower())
+        add_layer_to_map(ds)
 
-        if not layer.isValid():
-            error_message = self.tr('Layer %s can\'t be added to the map!') % ds.alias
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                error_message,
-                                                level=QgsMessageBar.CRITICAL)
-            QgsMessageLog.logMessage(error_message, level=QgsMessageLog.CRITICAL)
-        else:
-            # Set attribs
-            layer.setAttribution(ds.copyright_text)
-            layer.setAttributionUrl(ds.copyright_link)
-            # Insert to bottom
-            QgsMapLayerRegistry.instance().addMapLayer(layer, False)
-            toc_root = QgsProject.instance().layerTreeRoot()
-            toc_root.insertLayer(len(toc_root.children()), layer)
-            # Save link
-            self.service_layers.append(layer)
-            # Set OTF CRS Transform for map
-            if PluginSettings.enable_otf_3857() and ds.type == KNOWN_DRIVERS.TMS:
-                self.iface.mapCanvas().setCrsTransformEnabled(True)
-                self.iface.mapCanvas().setDestinationCrs(TileLayer.CRS_3857)
 
     def unload(self):
-        # remove menu/
+        # remove menu/panels
         self.remove_menu_buttons()
+        self.remove_server_panel()
 
         # clean vars
         self.menu = None
@@ -225,17 +189,19 @@ class QuickMapServices:
 
     def build_menu_tree(self):
         # Main Menu
-        icon_path = self.plugin_dir + '/icons/mActionAddLayer.png'
-        self.menu = QMenu(self.tr(u'QuickMapServices'))
-        self.menu.setIcon(QIcon(icon_path))
+        self.menu.clear()
 
-        self.groups_list = DsGroupsList(self.locale, self.custom_translator)
-        self.ds_list = DataSourcesList(self.locale, self.custom_translator)
+        self.groups_list = GroupsList()
+        self.ds_list = DataSourcesList()
 
         data_sources = self.ds_list.data_sources.values()
         data_sources.sort(key=lambda x: x.alias or x.id)
 
+        ds_hide_list = PluginSettings.get_hide_ds_id_list()
+        
         for ds in data_sources:
+            if ds.id in ds_hide_list:
+                continue
             ds.action.triggered.connect(self.insert_layer)
             gr_menu = self.groups_list.get_group_menu(ds.group)
             gr_menu.addAction(ds.action)
@@ -255,6 +221,13 @@ class QuickMapServices:
         scales_act.triggered.connect(self.set_tms_scales)
         #self.menu.addAction(scales_act)  # TODO: uncomment after fix
         self.service_actions.append(scales_act)
+
+        icon_settings_path = self.plugin_dir + '/icons/mapservices.png'
+        server_panel_act = self.server_toolbox.toggleViewAction()
+        server_panel_act.setIcon(QIcon(icon_settings_path))
+        server_panel_act.setText(self.tr('Show\\Hide services panel'))
+        self.service_actions.append(server_panel_act)
+        self.menu.addAction(server_panel_act)
 
         icon_settings_path = self.plugin_dir + '/icons/mActionSettings.png'
         settings_act = QAction(QIcon(icon_settings_path), self.tr('Settings'), self.iface.mainWindow())
@@ -313,12 +286,30 @@ class QuickMapServices:
 
     def show_settings_dialog(self):
         settings_dlg = SettingsDialog()
-
         settings_dlg.exec_()
         # apply settings
-        self.remove_menu_buttons()
+        # self.remove_menu_buttons()
         self.build_menu_tree()
-        self.append_menu_buttons()
+        # self.append_menu_buttons()
 
+    def init_server_panel(self):
+        self.server_toolbox = QmsServiceToolbox(self.iface)
+        self.iface.addDockWidget(PluginSettings.server_dock_area(), self.server_toolbox)
+        self.server_toolbox.setWindowIcon(QIcon(self.plugin_dir + '/icons/mapservices.png'))
+        self.server_toolbox.setVisible(PluginSettings.server_dock_visibility())
+        # self.server_toolbox.setFloating(PluginSettings.dock_floating())
+        # self.server_toolbox.resize(PluginSettings.dock_size())
+        # self.server_toolbox.move(PluginSettings.dock_pos())
+        # self.server_toolbox.setWindowIcon(QIcon(path.join(_current_path, 'edit-find-project.png')))
 
+    def remove_server_panel(self):
+        mw = self.iface.mainWindow()
+        PluginSettings.set_server_dock_area(mw.dockWidgetArea(self.server_toolbox))
+        PluginSettings.set_server_dock_visibility(self.server_toolbox.isVisible())
+        # PluginSettings.set_dock_floating(self.__quick_tlb.isFloating())
+        # PluginSettings.set_dock_pos(self.__quick_tlb.pos())
+        # PluginSettings.set_dock_size(self.__quick_tlb.size())
+        # PluginSettings.set_dock_geocoder_name(self.__quick_tlb.get_active_geocoder_name())
+        self.iface.removeDockWidget(self.server_toolbox)
+        del self.server_toolbox
 
