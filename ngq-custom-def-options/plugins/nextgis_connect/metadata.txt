@@ -1,0 +1,67 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=NextGIS Connect
+qgisMinimumVersion=2.6
+description=Create, connect and use your own fully-functional Web GIS at NextGIS.
+about=Welcome to brand new cloud Web GIS from NextGIS! With this plugin you can upload/download geodata to and from your Web GIS, manage layers and much more. This is beta! We'd love to hear feedback about your experience at http://nextgis.ru/en/contact.
+version=0.5.0
+author=NextGIS
+email=info@nextgis.com
+
+# End of mandatory metadata
+
+# Optional items:
+
+# Uncomment the following line and add your changelog:
+changelog=0.5.0
+        * Release experimental
+    0.4.20
+        * Take into account layer visibility in project importing
+    0.4.19
+        * Push vector to ngw in EPSG: 4326
+    0.4.16
+        * Add dialog to set the number of objects returned by default for wfs service
+    0.4.15
+        * Add progress bar
+    0.4.14
+        * Add wfs creation from ngw vector layer
+        * Improve ngw resources context menu
+    0.4.13
+        * Handle authorization error (HTTPForbidden) error 
+    0.4.12
+        * Rename plugin
+    0.4.11
+        * Change visualization of operating process
+        * Add message inviting you to register on my.nextgis.com if thre is not any ngw connections.
+    0.4:
+        * Fix resmeta error
+        * Fix WFS
+        * Fix WMS icon
+    0.3:
+        * Fix errors
+        * Add encoding for geosjon layers
+    0.2:
+        * Russian translation added
+        * New tool for open web map
+        * New tool for refresh resource tree
+        * Some bug fixing
+
+# Tags are comma separated with spaces allowed
+tags=nextgis, web, tool, server
+
+homepage=
+tracker=https://github.com/nextgis/nextgis_connect/issues
+repository=https://github.com/nextgis/nextgis_connect
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
