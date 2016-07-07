@@ -20,12 +20,15 @@
 """
 from ngw_webmap import NGWWebMap
 from ngw_mapserver_style import NGWMapServerStyle
+from ngw_qgis_vector_style import NGWQGISVectorStyle
 from ngw_wms_service import NGWWmsService
 from ngw_vector_layer import NGWVectorLayer
 from ngw_group_resource import NGWGroupResource
 from ngw_wfs_service import NGWWfsService
 from ngw_resource import NGWResource
 from ngw_connection import NGWConnection
+
+API_NGW_VERSION = '/api/component/pyramid/pkg_version'
 
 
 class NGWResourceFactory():
@@ -38,6 +41,7 @@ class NGWResourceFactory():
             NGWGroupResource.type_id: NGWGroupResource,
             NGWVectorLayer.type_id: NGWVectorLayer,
             NGWMapServerStyle.type_id: NGWMapServerStyle,
+            NGWQGISVectorStyle.type_id: NGWQGISVectorStyle,
             NGWWebMap.type_id: NGWWebMap,
         }
         self.__default_type = NGWResource.type_id
@@ -63,3 +67,6 @@ class NGWResourceFactory():
 
     def get_root_resource(self):
         return self.get_resource(0)
+
+    def get_ngw_verson(self):
+        return self.__conn.get(API_NGW_VERSION)

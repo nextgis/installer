@@ -97,13 +97,16 @@ class QNGWResourcesModelExt(QAbstractItemModel):
         self.endResetModel()
         self.modelReset.emit()
 
-    def __resetModel(self, ngw_connection_settings):
-        # TODO stop all workers
+    def cleanModel(self):
         c = self.root_item.childCount()
         self.beginRemoveRows(QModelIndex(), 0, c - 1)
         for i in range(c - 1, -1, -1):
             self.root_item.removeChild(self.root_item.child(i))
         self.endRemoveRows()
+
+    def __resetModel(self, ngw_connection_settings):
+        # TODO stop all workers
+        self.cleanModel()
 
         try:
             rsc_factory = NGWResourceFactory(ngw_connection_settings)
@@ -204,6 +207,14 @@ class QNGWResourcesModelExt(QAbstractItemModel):
 
         return parent_item.childCount() > 0
 
+    def flags(self, index):
+        if index and index.isValid():
+            item = index.internalPointer()
+            if not isinstance(item, AuxiliaryItem):
+                return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+        return Qt.NoItemFlags
+
     def _nearest_ngw_group_resource_parent(self, index):
         checking_index = index
         item = checking_index.internalPointer()
@@ -301,6 +312,11 @@ class QNGWResourcesModelExt(QAbstractItemModel):
         self.rowsInserted.emit(index, c, c + len(ngw_resources) - 1)
 
     def tryCreateNGWGroup(self, new_group_name, parent_index):
+        if not parent_index.isValid():
+            parent_index = self.index(0, 0, parent_index)
+
+        parent_index = self._nearest_ngw_group_resource_parent(parent_index)
+
         parent_item = parent_index.internalPointer()
         ngw_resource_parent = parent_item.data(0, parent_item.NGWResourceRole)
 

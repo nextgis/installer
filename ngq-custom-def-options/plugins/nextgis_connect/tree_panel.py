@@ -9,7 +9,7 @@
                              -------------------
         begin                : 2015-01-30
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by NextGIS
+        copyright            : (C) 2014-2016 by NextGIS
         email                : info@nextgis.com
  ***************************************************************************/
 
@@ -26,10 +26,13 @@ import os
 import json
 import subprocess
 import webbrowser
+import functools
+from urlparse import urlparse
+
 from PyQt4 import uic
-from PyQt4.QtGui import QDockWidget, QMainWindow, QIcon, QInputDialog, QLineEdit, QMenu, QMessageBox, QAction
-from PyQt4.QtCore import Qt, QModelIndex
-from qgis.core import QgsMessageLog, QgsProject
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+from qgis.core import QgsMessageLog, QgsProject, QgsMapLayer, QgsVectorLayer, QgsRasterLayer
 from qgis.gui import QgsMessageBar
 import sys
 from ngw_api.core.ngw_error import NGWError
@@ -39,7 +42,6 @@ from ngw_api.core.ngw_vector_layer import NGWVectorLayer
 from ngw_api.core.ngw_webmap import NGWWebMap
 from ngw_api.core.ngw_wfs_service import NGWWfsService
 # from ngw_api.core.ngw_resource import NGWResource
-from ngw_api.core.ngw_error import NGWError
 
 from ngw_api.qgis.ngw_connection_edit_dialog import NGWConnectionEditDialog
 from ngw_api.qgis.ngw_plugin_settings import NgwPluginSettings
@@ -63,6 +65,7 @@ class TreePanel(QDockWidget):
     def __init__(self, iface, parent=None):
         # init dock
         super(TreePanel, self).__init__(parent)
+
         self.setWindowTitle(self.tr('NextGIS Resources'))
 
         # init internal control
@@ -74,81 +77,200 @@ class TreePanel(QDockWidget):
 class TreeControl(QMainWindow, FORM_CLASS):
     def __init__(self, iface, parent=None):
         super(TreeControl, self).__init__(parent)
-        self.setupUi(self)
 
+        self.setupUi(self)
         self.iface = iface
 
-        self.trvResources = NGWResourcesTreeView(self)
-        self.nrw_reorces_tree_container.addWidget(self.trvResources)
-        # actions
-        self.actionAddAsGeoJSON.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionAddOgrLayer.svg')))
-        self.actionAddAsGeoJSON.triggered.connect(self.add_json_layer)
-        self.actionAddWFS.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionAddWfsLayer.svg')))
-        self.actionAddWFS.triggered.connect(self.add_wfs_layer)
-        self.actionOpenMapInBrowser.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionOpenMap.svg')))
-        self.actionOpenMapInBrowser.triggered.connect(self.action_open_map)
-        self.actionCreateNewGroup.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionNewFolder.png')))
-        self.actionCreateNewGroup.triggered.connect(self.create_group)
-        self.actionImportQGISProject.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionQGISImport.svg')))
-        self.actionImportQGISProject.triggered.connect(self.action_import_qgis_project)
-        self.actionRefresh.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionRefresh.svg')))
-        self.actionRefresh.triggered.connect(self.action_refresh)
-        self.actionSettings.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionSettings.svg')))
-        self.actionSettings.triggered.connect(self.action_settings)
+        # Do not use ui toolbar
+        # self.removeToolBar(self.mainToolBar)
 
-        # actions on qgis resources
-        # self.actionImportQGISProject = QAction(
-        #     QIcon(os.path.join(ICONS_PATH, 'mActionQGISImport.svg')),
-        #     self.tr("Import current project"),
-        #     self.iface.legendInterface()
-        # )
-        # self.actionImportQGISProject.triggered.connect(self.action_import_qgis_project)
+        # actions
+        self.actionExport = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionExport.svg')),
+            self.tr("Add to QGIS"),
+            self
+        )
+        self.actionExport.triggered.connect(self.__export_to_qgis)
 
         self.actionImportQGISResource = QAction(
-            self.tr("Import selected"),
+            self.tr("Import selected layer"),
             self.iface.legendInterface()
         )
         self.actionImportQGISResource.triggered.connect(self.action_import_layer)
+        self.actionImportQGISResource.setEnabled(False)
+
+        self.actionImportQGISProject = QAction(
+            self.tr("Import current project"),
+            self.iface.legendInterface()
+        )
+        self.actionImportQGISProject.triggered.connect(self.action_import_qgis_project)
+
+        self.menuImport = QMenu(
+            self.tr("Add to Web GIS"),
+            self
+        )
+        self.menuImport.setIcon(
+            QIcon(os.path.join(ICONS_PATH, 'mActionImport.svg'))
+        )
+        self.menuImport.menuAction().setIconVisibleInMenu(False)
+        self.menuImport.addAction(self.actionImportQGISResource)
+        self.menuImport.addAction(self.actionImportQGISProject)
+
+        # self.actionAddAsGeoJSON.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionAddOgrLayer.svg')))
+        # self.actionAddAsGeoJSON.triggered.connect(self.add_json_layer)
+        # self.actionAddWFS.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionAddWfsLayer.svg')))
+        # self.actionAddWFS.triggered.connect(self.add_wfs_layer)
+        # self.actionOpenMapInBrowser.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionOpenMap.svg')))
+        # self.actionOpenMapInBrowser.triggered.connect(self.__action_open_map)
+        # self.actionCreateNewGroup.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionNewFolder.png')))
+        # self.actionCreateNewGroup.triggered.connect(self.create_group)
+        # self.actionImportQGISProject.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionQGISImport.svg')))
+        # self.actionImportQGISProject.triggered.connect(self.action_import_qgis_project)
+        # self.actionRefresh.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionRefresh.svg')))
+        # self.actionRefresh.triggered.connect(self.reinit_tree)
+        # self.actionSettings.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionSettings.svg')))
+        # self.actionSettings.triggered.connect(self.action_settings)
+
+        self.actionCreateNewGroup = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionNewFolder.svg')),
+            self.tr("Create new group"),
+            self
+        )
+        self.actionCreateNewGroup.setToolTip(self.tr("Create new resource group"))
+        self.actionCreateNewGroup.triggered.connect(self.create_group)
+
+        self.actionCreateWFSService = QAction(
+            QIcon(),
+            self.tr("Create WFS service"),
+            self
+        )
+        self.actionCreateWFSService.setToolTip(self.tr("Create WFS service"))
+        self.actionCreateWFSService.triggered.connect(self.create_wfs_service)
+
+        self.actionDeleteResource = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionDelete.svg')),
+            self.tr("Delete"),
+            self
+        )
+        self.actionDeleteResource.setToolTip(self.tr("Delete resource"))
+        self.actionDeleteResource.triggered.connect(self.delete_curent_ngw_resource)
+
+        self.actionOpenMapInBrowser = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionOpenMap.svg')),
+            self.tr("Open map in browser"),
+            self
+        )
+        self.actionOpenMapInBrowser.setToolTip(self.tr("Open map in browser"))
+        self.actionOpenMapInBrowser.triggered.connect(self.__action_open_map)
+
+        self.actionRefresh = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionRefresh.svg')),
+            self.tr("Refresh"),
+            self
+        )
+        self.actionRefresh.setToolTip(self.tr("Refresh"))
+        self.actionRefresh.triggered.connect(self.reinit_tree)
+
+        self.actionSettings = QAction(
+            QIcon(os.path.join(ICONS_PATH, 'mActionSettings.svg')),
+            self.tr("Settings"),
+            self
+        )
+        self.actionSettings.setToolTip(self.tr("Settings"))
+        self.actionSettings.triggered.connect(self.action_settings)
+
+        # Add new toolbar
+        self.main_tool_bar = NGWPanelToolBar()
+        self.addToolBar(self.main_tool_bar)
+
+        self.main_tool_bar.addAction(self.actionExport)
+        toolbutton = QToolButton()
+        toolbutton.setPopupMode(QToolButton.InstantPopup)
+        toolbutton.setMenu(self.menuImport)
+        toolbutton.setIcon(self.menuImport.icon())
+        toolbutton.setText(self.menuImport.title())
+        toolbutton.setToolTip(self.menuImport.title())
+        self.main_tool_bar.addWidget(toolbutton)
+        self.main_tool_bar.addSeparator()
+
+        self.main_tool_bar.addAction(self.actionCreateNewGroup)
+        self.main_tool_bar.addAction(self.actionRefresh)
+        self.main_tool_bar.addSeparator()
+
+        self.main_tool_bar.addAction(self.actionOpenMapInBrowser)
+        self.main_tool_bar.addSeparator()
+
+        self.main_tool_bar.addAction(self.actionSettings)
 
         # ngw resources model
         self._resource_model = QNGWResourcesModel4QGIS()
-        self._resource_model.errorOccurred.connect(self.model_error_process)
+        self._resource_model.errorOccurred.connect(self.__model_error_process)
         self._resource_model.jobStarted.connect(self.__modelJobStarted)
         self._resource_model.jobStatusChanged.connect(self.__modelJobStatusChanged)
         self._resource_model.jobFinished.connect(self.__modelJobFinished)
         self.blocked_jobs = {
-            self._resource_model.JOB_CREATE_NGW_GROUP_RESOURCE: self.tr("NGW Resource is being created"),
-            self._resource_model.JOB_DELETE_NGW_RESOURCE: self.tr("NGW Resource is being deleted"),
+            self._resource_model.JOB_CREATE_NGW_GROUP_RESOURCE: self.tr("Resource is being created"),
+            self._resource_model.JOB_DELETE_NGW_RESOURCE: self.tr("Resource is being deleted"),
             self._resource_model.JOB_IMPORT_QGIS_RESOURCE: self.tr("Layer is being imported"),
             self._resource_model.JOB_IMPORT_QGIS_PROJECT: self.tr("Project is being imported"),
-            self._resource_model.JOB_CREATE_NGW_WFS_SERVICE: self.tr("NGW WFS service is being created"),
+            self._resource_model.JOB_CREATE_NGW_WFS_SERVICE: self.tr("WFS service is being created"),
         }
 
+        # ngw resources view
+        self.trvResources = NGWResourcesTreeView(self)
         self.trvResources.setModel(self._resource_model)
+        self.trvResources.customContextMenuRequested.connect(self.slotCustomContextMenu)
+        self.trvResources.itemDoubleClicked.connect(self.trvDoubleClickProcess)
+
+        self.nrw_reorces_tree_container.addWidget(self.trvResources)
 
         # update state
-        self.update_conn_list()
-        self.reinit_tree(self.cmbConnection.currentText())
+        self.reinit_tree()
 
-        # signals
-        self.cmbConnection.currentIndexChanged[str].connect(self.reinit_tree)
-        self.trvResources.customContextMenuRequested.connect(self.slotCustomContextMenu)
+        # Help message label
+        url = "http://%s/docs_ngcom/source/ngqgis_connect.html" % self.tr("docs.nextgis.com")
+        self.helpMessageLabel.setText(
+            ' <span style="font-weight:bold;font-size:12px;color:blue;">?    </span><a href="%s">%s</a>' % (
+                url,
+                self.tr("Help")
+            )
+        )
 
-    def model_error_process(self, job, exception):
+        self.iface.currentLayerChanged.connect(self.__checkImportActions)
+
+        # ----------------------------------------------
+        # Configurate new WebGIS InfoWidget
+        # This widget may be useful in the future
+        self.webGISCreationMessageWidget.setVisible(False)
+        # self.webGISCreationMessageCloseLable.linkActivated.connect(self.__closeNewWebGISInfoWidget)
+        # if PluginSettings.webgis_creation_message_closed_by_user():
+        #     self.webGISCreationMessageWidget.setVisible(False)
+        # ----------------------------------------------
+
+        self.main_tool_bar.setIconSize(QSize(24, 24))
+    # def __closeNewWebGISInfoWidget(self, link):
+    #     self.webGISCreationMessageWidget.setVisible(False)
+    #     PluginSettings.set_webgis_creation_message_closed_by_user(True)
+
+    def __checkImportActions(self, current_qgis_layer):
+        if current_qgis_layer is None:
+            self.actionImportQGISResource.setEnabled(False)
+        elif isinstance(current_qgis_layer, (QgsVectorLayer, QgsRasterLayer)):
+            self.actionImportQGISResource.setEnabled(True)
+
+    def __model_error_process(self, job, exception):
         QgsMessageLog.logMessage("model error process job: %d" % job)
         QgsMessageLog.logMessage("JOB_CREATE_NGW_WFS_SERVICE: %d" % self._resource_model.JOB_CREATE_NGW_WFS_SERVICE)
-        #QgsMessageLog.logMessage("exception: %s" % str(type(exception)))
-        #QgsMessageLog.logMessage("exception: %s" % exception)
 
         error_mes = "Error in unknown operation"
         if job == self._resource_model.JOB_LOAD_NGW_RESOURCE_CHILDREN:
-            error_mes = self.tr("Loading resource error. Check your connection settings. See logs for details.")
+            error_mes = self.tr("Loading resource error. Check your connection settings. See log for details.")
         elif job == self._resource_model.JOB_CREATE_NGW_GROUP_RESOURCE:
-            error_mes = self.tr("Creating ngw group resource error.")
+            error_mes = self.tr("Creating group resource error.")
         elif job == self._resource_model.JOB_IMPORT_QGIS_RESOURCE:
-            error_mes = self.tr("Creating ngw layer resource error.")
+            error_mes = self.tr("Creating layer resource error.")
         elif job == self._resource_model.JOB_CREATE_NGW_WFS_SERVICE:
-            error_mes = self.tr("Creating ngw wfs service error. See logs for details.")
+            error_mes = self.tr("Creating WFS service error. See log for details.")
 
         self.iface.messageBar().pushMessage(
             self.tr('Error'),
@@ -161,12 +283,12 @@ class TreeControl(QMainWindow, FORM_CLASS):
                 exeption_dict = json.loads(exception.message)
                 exeption_type = exeption_dict.get("exception", "")
 
-                name_of_conn = self.cmbConnection.currentText()
-                if exeption_type == "HTTPForbidden":
+                name_of_conn = NgwPluginSettings.get_selected_ngw_connection_name()
+
+                if exeption_type in ["HTTPForbidden", "ForbiddenError"]:
                     conn_sett = NgwPluginSettings.get_ngw_connection(name_of_conn)
-                    dlg = NGWConnectionEditDialog(ngw_connection_settings=conn_sett)
-                    dlg.leName.setDisabled(True)
-                    dlg.leUrl.setDisabled(True)
+                    print "conn_sett: ", conn_sett
+                    dlg = NGWConnectionEditDialog(ngw_connection_settings=conn_sett, only_password_change=True)
                     dlg.setWindowTitle(
                         self.tr("Access denied. Enter your login.")
                     )
@@ -175,7 +297,7 @@ class TreeControl(QMainWindow, FORM_CLASS):
                     if res:
                         conn_sett = dlg.ngw_connection_settings
                         NgwPluginSettings.save_ngw_connection(conn_sett)
-                        self.reinit_tree(name_of_conn)
+                        self.reinit_tree()
                     del dlg
 
                 ngw_err_msg = exeption_dict.get("message", "")
@@ -193,9 +315,11 @@ class TreeControl(QMainWindow, FORM_CLASS):
                     level=QgsMessageLog.CRITICAL
                 )
         else:
-
             QgsMessageLog.logMessage(
-                "%s\n\t %s" % (error_mes, exception),
+                "%s\n\t %s" % (
+                    error_mes,
+                    exception,
+                ),
                 PluginSettings._product,
                 level=QgsMessageLog.CRITICAL
             )
@@ -212,29 +336,29 @@ class TreeControl(QMainWindow, FORM_CLASS):
         if job_id in self.blocked_jobs:
             self.trvResources.removeBlockedJob(self.blocked_jobs[job_id])
 
-    def update_conn_list(self):
-        self.cmbConnection.clear()
-        self.cmbConnection.addItems(NgwPluginSettings.get_ngw_connection_names())
-        self.set_active_conn_from_sett()
-
-    def set_active_conn_from_sett(self):
-        last_connection = NgwPluginSettings.get_selected_ngw_connection_name()
-        idx = self.cmbConnection.findText(last_connection)
-        if idx == -1 and self.cmbConnection.count() > 0:
-            self.cmbConnection.setCurrentIndex(0)
-        else:
-            self.cmbConnection.setCurrentIndex(idx)
-
-    def reinit_tree(self, name_of_conn):
+    def reinit_tree(self):
         # clear tree and states
-        QgsMessageLog.logMessage("reinit_tree")
-
-        # self.trvResources.setModel(None)
         self.disable_tools()
 
+        # ----------------------------------------------
+        # Configurate new WebGIS InfoWidget
+        # This widget may be useful in the future
+        # Check show message for creation new web gis
+        # if not PluginSettings.webgis_creation_message_closed_by_user():
+        #     for conn_name in NgwPluginSettings.get_ngw_connection_names():
+        #         conn_settings = NgwPluginSettings.get_ngw_connection(conn_name)
+        #         o = urlparse(conn_settings.server_url)
+        #         if o.hostname.find("nextgis.com") != -1:
+        #             self.webGISCreationMessageWidget.setVisible(False)
+        #             break
+        # ----------------------------------------------
+
+        name_of_conn = NgwPluginSettings.get_selected_ngw_connection_name()
         if not name_of_conn:
             self.trvResources.showWelcomeMessage()
+            self._resource_model.cleanModel()
             return
+
         self.trvResources.hideWelcomeMessage()
 
         conn_sett = NgwPluginSettings.get_ngw_connection(name_of_conn)
@@ -242,83 +366,148 @@ class TreeControl(QMainWindow, FORM_CLASS):
         if not conn_sett:
             return
 
-        # if conn_sett
-
-        # setup ngw api
-        # rsc_factory = NGWResourceFactory(conn_sett)
-
-        # try:
-        #     root_rsc = rsc_factory.get_root_resource()
-        # except Exception, e:
-        #     error_message = self.tr('Error on fetch resources: ') + e.message
-        #     self.iface.messageBar().pushMessage(self.tr('ERROR'),
-        #                                         error_message,
-        #                                         level=QgsMessageBar.CRITICAL)
-        #     QgsMessageLog.logMessage(error_message, level=QgsMessageLog.CRITICAL)
-        #     return
-
-        # setup new qt model
-        # self._root_item = QNGWFakeRootItem(root_rsc, None)
-        # self._resource_model = QNGWResourcesModel(self._root_item)
-        # self.trvResources.setModel(self._resource_model)
         self._resource_model.resetModel(conn_sett)
 
         # expand root item
         self.trvResources.setExpanded(self._resource_model.index(0, 0, QModelIndex()), True)
-
         # reconnect signals
         self.trvResources.selectionModel().currentChanged.connect(self.active_item_chg)
 
         # save last selected connection
-        NgwPluginSettings.set_selected_ngw_connection_name(name_of_conn)
+        # NgwPluginSettings.set_selected_ngw_connection_name(name_of_conn)
 
     def active_item_chg(self, selected, deselected):
         ngw_resource = selected.data(Qt.UserRole)
         # TODO: NEED REFACTORING! Make isCompatible methods!
         # enable/dis geojson button
-        self.actionAddAsGeoJSON.setEnabled(isinstance(ngw_resource, NGWVectorLayer))
+        # self.actionAddAsGeoJSON.setEnabled(isinstance(ngw_resource, NGWVectorLayer))
         # enable/dis wfs button
-        self.actionAddWFS.setEnabled(isinstance(ngw_resource, NGWWfsService))
+        # self.actionAddWFS.setEnabled(isinstance(ngw_resource, NGWWfsService))
+        self.actionExport.setEnabled(
+            isinstance(
+                ngw_resource,
+                (
+                    NGWWfsService,
+                    NGWVectorLayer
+                )
+            )
+        )
         # enable/dis new group button
-        self.actionCreateNewGroup.setEnabled(isinstance(ngw_resource, NGWGroupResource))
+        # self.actionCreateNewGroup.setEnabled(isinstance(ngw_resource, NGWGroupResource))
         # enable/dis webmap
         self.actionOpenMapInBrowser.setEnabled(isinstance(ngw_resource, NGWWebMap))
 
     def disable_tools(self):
-        self.actionAddAsGeoJSON.setEnabled(False)
-        self.actionAddWFS.setEnabled(False)
-        self.actionCreateNewGroup.setEnabled(False)
+        # self.actionAddAsGeoJSON.setEnabled(False)
+        # self.actionAddWFS.setEnabled(False)
+        self.actionExport.setEnabled(False)
+        # self.actionCreateNewGroup.setEnabled(False)
         self.actionOpenMapInBrowser.setEnabled(False)
 
-    def add_json_layer(self):
+    def action_settings(self):
+        sett_dialog = SettingsDialog()
+        sett_dialog.show()
+        sett_dialog.exec_()
+
+        self.reinit_tree()
+
+    def slotCustomContextMenu(self, qpoint):
+        index = self.trvResources.indexAt(qpoint)
+
+        if not index.isValid():
+            index = self._resource_model.index(
+                0,
+                0,
+                QModelIndex()
+            )
+
+        ngw_resource = index.data(QNGWResourceItemExt.NGWResourceRole)
+
+        menu = QMenu()
+        if isinstance(ngw_resource, NGWGroupResource):
+            menu.addAction(self.actionCreateNewGroup)
+        elif isinstance(ngw_resource, NGWVectorLayer):
+            menu.addAction(self.actionExport)
+            menu.addAction(self.actionCreateWFSService)
+        elif isinstance(ngw_resource, NGWWfsService):
+            menu.addAction(self.actionExport)
+        elif isinstance(ngw_resource, NGWWebMap):
+            menu.addAction(self.actionOpenMapInBrowser)
+
+        menu.addSeparator()
+        menu.addAction(self.actionDeleteResource)
+
+        menu.exec_(self.trvResources.viewport().mapToGlobal(qpoint))
+
+    def trvDoubleClickProcess(self, index):
+        ngw_resource = index.data(QNGWResourceItemExt.NGWResourceRole)
+        if isinstance(ngw_resource, NGWWebMap):
+            self.__action_open_map()
+
+    def __action_open_map(self):
         sel_index = self.trvResources.selectionModel().currentIndex()
-        # print sel_index.isValid()
+
         if sel_index.isValid():
             ngw_resource = sel_index.data(Qt.UserRole)
+            url = ngw_resource.get_display_url()
+            QDesktopServices.openUrl(QUrl(url))
+            # if sys.platform == 'darwin':    # in case of OS X
+            #     subprocess.Popen(['open', url])
+            # else:
+            #     webbrowser.open_new_tab(url)
 
-            try:
-                add_resource_as_geojson(ngw_resource)
-            except NGWError as ex:
-                error_mes = ex.message or ''
-                self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                error_mes,
-                                                level=QgsMessageBar.CRITICAL)
-                QgsMessageLog.logMessage(error_mes, level=QgsMessageLog.CRITICAL)
-
-    def add_wfs_layer(self):
+    def __export_to_qgis(self):
         sel_index = self.trvResources.selectionModel().currentIndex()
-
         if sel_index.isValid():
             ngw_resource = sel_index.data(Qt.UserRole)
-
             try:
-                add_resource_as_wfs_layers(ngw_resource)
+                if isinstance(ngw_resource, NGWVectorLayer):
+                    add_resource_as_geojson(ngw_resource)
+                elif isinstance(ngw_resource, NGWWfsService):
+                    add_resource_as_wfs_layers(ngw_resource)
+
             except NGWError as ex:
                 error_mes = ex.message or ''
-                self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                error_mes,
-                                                level=QgsMessageBar.CRITICAL)
+                self.iface.messageBar().pushMessage(
+                    self.tr('Error'),
+                    error_mes,
+                    level=QgsMessageBar.CRITICAL
+                )
                 QgsMessageLog.logMessage(error_mes, level=QgsMessageLog.CRITICAL)
+
+    # def add_json_layer(self):
+    #     sel_index = self.trvResources.selectionModel().currentIndex()
+    #     # print sel_index.isValid()
+    #     if sel_index.isValid():
+    #         ngw_resource = sel_index.data(Qt.UserRole)
+
+    #         try:
+    #             add_resource_as_geojson(ngw_resource)
+    #         except NGWError as ex:
+    #             error_mes = ex.message or ''
+    #             self.iface.messageBar().pushMessage(
+    #                 self.tr('Error'),
+    #                 error_mes,
+    #                 level=QgsMessageBar.CRITICAL
+    #             )
+    #             QgsMessageLog.logMessage(error_mes, level=QgsMessageLog.CRITICAL)
+
+    # def add_wfs_layer(self):
+    #     sel_index = self.trvResources.selectionModel().currentIndex()
+
+    #     if sel_index.isValid():
+    #         ngw_resource = sel_index.data(Qt.UserRole)
+
+    #         try:
+    #             add_resource_as_wfs_layers(ngw_resource)
+    #         except NGWError as ex:
+    #             error_mes = ex.message or ''
+    #             self.iface.messageBar().pushMessage(
+    #                 self.tr('Error'),
+    #                 error_mes,
+    #                 level=QgsMessageBar.CRITICAL
+    #             )
+    #             QgsMessageLog.logMessage(error_mes, level=QgsMessageLog.CRITICAL)
 
     def create_group(self):
         new_group_name, res = QInputDialog.getText(
@@ -334,28 +523,10 @@ class TreeControl(QMainWindow, FORM_CLASS):
             return
 
         sel_index = self.trvResources.selectionModel().currentIndex()
+        if sel_index is None:
+            sel_index = self._resource_model.index(0, 0, QModelIndex())
+
         self._resource_model.tryCreateNGWGroup(new_group_name, sel_index)
-
-    def action_refresh(self):
-        self.reinit_tree(self.cmbConnection.currentText())  # TODO: more smart update (selected and childs)
-
-    def action_settings(self):
-        sett_dialog = SettingsDialog()
-        sett_dialog.show()
-        sett_dialog.exec_()
-
-        self.update_conn_list()
-
-    def action_open_map(self):
-        sel_index = self.trvResources.selectionModel().currentIndex()
-
-        if sel_index.isValid():
-            ngw_resource = sel_index.data(Qt.UserRole)
-            url = ngw_resource.get_display_url()
-            if sys.platform == 'darwin':    # in case of OS X
-                subprocess.Popen(['open', url])
-            else:
-                webbrowser.open_new_tab(url)
 
     def action_import_qgis_project(self):
         sel_index = self.trvResources.selectionModel().currentIndex()
@@ -375,8 +546,8 @@ class TreeControl(QMainWindow, FORM_CLASS):
         if new_group_name == u'':
             QMessageBox.critical(
                 self,
-                self.tr("Import QGIS project error"),
-                self.tr("Empty import project name")
+                self.tr("Project import error"),
+                self.tr("Empty project name")
             )
             return
 
@@ -387,40 +558,11 @@ class TreeControl(QMainWindow, FORM_CLASS):
         sel_index = self.trvResources.selectionModel().currentIndex()
         self._resource_model.createNGWLayer(qgs_map_layer, sel_index)
 
-    def slotCustomContextMenu(self, qpoint):
-        index = self.trvResources.indexAt(qpoint)
-
-        if not index.isValid():
-            return
-
-        ngw_resource = index.data(QNGWResourceItemExt.NGWResourceRole)
-
-        menu = QMenu()
-
-        if isinstance(ngw_resource, NGWGroupResource):
-            actionNewGroup = menu.addAction(self.tr("New group"))
-            actionNewGroup.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionNewFolder.png')))
-            actionNewGroup.triggered.connect(self.create_group)
-
-        elif isinstance(ngw_resource, NGWVectorLayer):
-            menu.addAction(self.actionAddAsGeoJSON)
-            actionNewWFSService = menu.addAction(self.tr("Create WFS service"))
-            # actionNewGroup.setIcon(QIcon(os.path.join(ICONS_PATH, '.png')))
-            actionNewWFSService.triggered.connect(self.create_wfs_service)
-        elif isinstance(ngw_resource, NGWWfsService):
-            menu.addAction(self.actionAddWFS)
-
-        actionDelete = menu.addAction(self.tr("Delete"))
-        actionDelete.setIcon(QIcon(os.path.join(ICONS_PATH, 'mActionDelete.svg')))
-        actionDelete.triggered.connect(self.delete_curent_ngw_resource)
-
-        menu.exec_(self.trvResources.viewport().mapToGlobal(qpoint))
-
     def delete_curent_ngw_resource(self):
         res = QMessageBox.question(
             self,
-            self.tr("Delete ngw resource"),
-            self.tr("Are you sure you want to remove the ngw resource?"),
+            self.tr("Delete resource"),
+            self.tr("Are you sure you want to remove this resource?"),
             QMessageBox.Yes and QMessageBox.No,
             QMessageBox.Yes
         )
@@ -445,8 +587,22 @@ class TreeControl(QMainWindow, FORM_CLASS):
         self._resource_model.createWFSForVector(selected_index, ret_obj_num)
 
 
-# from PyQt4.QtCore import 
 from PyQt4 import QtGui
+
+
+class NGWPanelToolBar(QtGui.QToolBar):
+    def __init__(self):
+        QtGui.QToolBar.__init__(self, None)
+
+        self.setIconSize(QSize(24, 24))
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+    def contextMenuEvent(self, event):
+        event.accept()
+
+    def resizeEvent(self, event):
+        QtGui.QToolBar.setIconSize(self, QSize(24, 24))
+        event.accept()
 
 
 class Overlay(QtGui.QWidget):
@@ -528,17 +684,23 @@ class ProcessOverlay(Overlay):
 
 
 class NGWResourcesTreeView(QtGui.QTreeView):
+    itemDoubleClicked = pyqtSignal(object)
+
     def __init__(self, parent):
         QtGui.QTreeView.__init__(self, parent)
 
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.setHeaderHidden(True)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.header().setStretchLastSection(False)
+        self.header().setResizeMode(QHeaderView.ResizeToContents)
 
         # no ngw connectiond message
         self.no_ngw_connections_overlay = MessageOverlay(
             self,
             self.tr(
-                "No active connections to nextgis.com. Please create a connection. You can get your nextgis.com instance for free <a href='http://my.nextgis.com/'>here</a>!"
+                "No active connections to nextgis.com. Please create a connection. You can get your free Web GIS at <a href='http://my.nextgis.com/'>nextgis.com</a>!"
             )
         )
         self.no_ngw_connections_overlay.hide()
@@ -550,10 +712,25 @@ class NGWResourcesTreeView(QtGui.QTreeView):
 
         self.jobs = {}
 
+    def setModel(self, model):
+        model.rowsInserted.connect(self.__insertRowsProcess)
+        super(NGWResourcesTreeView, self).setModel(model)
+
+    def __insertRowsProcess(self, parent, start, end):
+        self.setExpanded(parent, True)
+
     def resizeEvent(self, event):
         self.no_ngw_connections_overlay.resize(event.size())
         self.ngw_job_block_overlay.resize(event.size())
-        event.accept()
+
+        QtGui.QTreeView.resizeEvent(self, event)
+
+    def mouseDoubleClickEvent(self, e):
+        index = self.indexAt(e.pos())
+        if index.isValid():
+            self.itemDoubleClicked.emit(index)
+
+        super(NGWResourcesTreeView, self).mouseDoubleClickEvent(e)
 
     def showWelcomeMessage(self):
         self.no_ngw_connections_overlay.show()

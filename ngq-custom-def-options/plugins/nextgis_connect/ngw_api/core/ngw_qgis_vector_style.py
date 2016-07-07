@@ -3,7 +3,7 @@
 /***************************************************************************
     NextGIS WEB API
                               -------------------
-        begin                : 2014-11-19
+        begin                : 2016-06-02
         git sha              : $Format:%H$
         copyright            : (C) 2014 by NextGIS
         email                : info@nextgis.com
@@ -18,10 +18,15 @@
  *                                                                         *
  ***************************************************************************/
 """
-MIN_REQUESTS_VERSION = '2.7.0'
+from os import path
+from ngw_resource import NGWResource
 
 
-def check_env():
-    import requests
-    if requests.__version__ < MIN_REQUESTS_VERSION:
-        raise EnvironmentError('Need "requests" version not lower %s!' % MIN_REQUESTS_VERSION)
+class NGWQGISVectorStyle(NGWResource):
+
+    type_id = 'qgis_vector_style'
+    icon_path = path.join(path.dirname(__file__), path.pardir, 'icons/', 'style.png')
+    type_title = 'NGW QGIS Vector Style'
+
+    def __init__(self, resource_factory, resource_json):
+        NGWResource.__init__(self, resource_factory, resource_json)

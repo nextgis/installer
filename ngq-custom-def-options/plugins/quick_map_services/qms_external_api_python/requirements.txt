@@ -1,2 +1,1 @@
-PIL
 requests>=2.7

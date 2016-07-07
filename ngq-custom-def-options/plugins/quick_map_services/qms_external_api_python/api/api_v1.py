@@ -1,7 +1,4 @@
-from StringIO import StringIO
-
 from .api_abstract import ApiClient
-from PIL import Image
 
 
 class ApiClientV1(ApiClient):
@@ -115,12 +112,7 @@ class ApiClientV1(ApiClient):
         }
 
         content = self._get_content(self.full_url(sub_url), params=params)
-        if content:
-            img = Image.open(StringIO(content))
-            return img
-        else:
-            return None
-
+        return content
 
 
     def get_default_icon(self, width=32, height=32):
@@ -135,6 +127,4 @@ class ApiClientV1(ApiClient):
         }
 
         content = self._get_content(self.full_url(sub_url), params=params)
-        img = Image.open(StringIO(content))
-
-        return img
+        return content

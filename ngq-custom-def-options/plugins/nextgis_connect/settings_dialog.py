@@ -45,7 +45,7 @@ class SettingsDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)
-        self.setFixedSize(self.size())
+        # self.setFixedSize(self.size())
 
         self.btnNew.clicked.connect(self.new_connection)
         self.btnEdit.clicked.connect(self.edit_connection)
@@ -58,6 +58,7 @@ class SettingsDialog(QDialog, FORM_CLASS):
         if dlg.exec_():
             conn_sett = dlg.ngw_connection_settings
             PluginSettings.save_ngw_connection(conn_sett)
+            PluginSettings.set_selected_ngw_connection_name(conn_sett.connection_name)
             self.populate_connection_list()
         del dlg
 
@@ -69,13 +70,16 @@ class SettingsDialog(QDialog, FORM_CLASS):
             conn_sett = PluginSettings.get_ngw_connection(conn_name)
 
         dlg = NGWConnectionEditDialog(ngw_connection_settings=conn_sett)
+        dlg.setWindowTitle(self.tr("Edit connection"))
         if dlg.exec_():
-            conn_sett = dlg.ngw_connection_settings
+            new_conn_sett = dlg.ngw_connection_settings
             # if conn was renamed - remove old
-            if conn_name is not None and conn_name != conn_sett.connection_name:
+            if conn_name is not None and conn_name != new_conn_sett.connection_name:
                 PluginSettings.remove_ngw_connection(conn_name)
             # save new
-            PluginSettings.save_ngw_connection(conn_sett)
+            PluginSettings.save_ngw_connection(new_conn_sett)
+            PluginSettings.set_selected_ngw_connection_name(new_conn_sett.connection_name)
+
             self.populate_connection_list()
         del dlg
 
