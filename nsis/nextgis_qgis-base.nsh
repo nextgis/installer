@@ -189,6 +189,10 @@ Section "-NGQ" NGQ
 	
 	SetOutPath "$INSTALL_DIR\ngq-utils"
 	File /r "${NGQ_UTILS_DIR}\*.*"
+    
+    SetOutPath "$INSTALL_DIR\manual"
+    File "${QGIS_MANUAL_FILE_RU}"
+    File "${QGIS_MANUAL_FILE_EN}"
 SectionEnd
 
 Section "-NGQ_CUSTOMIZATION" NGQ_CUSTOMIZATION

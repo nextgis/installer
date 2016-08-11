@@ -70,6 +70,7 @@ currnet_working_dir = os.getcwd()
 nsis_script_dir = os.path.join(currnet_dir, "nsis")
 nsis_script_name = "nextgis_qgis.nsi"
 default_scripts_dir = os.path.join(currnet_dir, "ngq_run_scripts")
+manuals_dir = os.path.join(currnet_dir, "manuals")
 
 ngq_install_utils_dir = os.path.join(nsis_script_dir, "ngq-utils")
 ngq_install_fonts_bat_template = os.path.join(ngq_install_utils_dir, "install_fonts.bat.in")
@@ -174,10 +175,14 @@ if saga_dir != "":
     make_installer_command.append( "/DSAGA_SRC_DIR=%s"%saga_dir )
 
 '''QGIS_MANUAL_FILE_NAME_RU'''
-make_installer_command.append( "/DQGIS_MANUAL_FILE_NAME_RU=QGIS-2.6-UserGuide-ru.pdf" )
+manual_ru = os.path.join(manuals_dir, "UserGuide_ru.pdf")
+make_installer_command.append( "/DQGIS_MANUAL_FILE_RU=%s" % manual_ru )
+make_installer_command.append( "/DQGIS_MANUAL_FILE_NAME_RU=%s" % os.path.basename(manual_ru) )
 
 '''QGIS_MANUAL_FILE_NAME_EN'''
-make_installer_command.append( "/DQGIS_MANUAL_FILE_NAME_EN=QGIS-2.6-UserGuide-en.pdf" )
+manual_en = os.path.join(manuals_dir, "UserGuide_en.pdf")
+make_installer_command.append( "/DQGIS_MANUAL_FILE_EN=%s" % manual_en )
+make_installer_command.append( "/DQGIS_MANUAL_FILE_NAME_EN=%s" % os.path.basename(manual_en) )
 
 '''PLUGINS'''
 plugins = []
