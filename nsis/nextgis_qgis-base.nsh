@@ -186,7 +186,10 @@ Section "-NGQ" NGQ
     
     SetOutPath "$INSTALL_DIR\bin\"
     File "${QGIS_SRC_DIR}\bin\qgis.exe"
-	
+    
+    SetOutPath "$INSTALL_DIR\bin\"
+    File "ngq-classifier\classifier.bat"
+
 	SetOutPath "$INSTALL_DIR\ngq-utils"
 	File /r "${NGQ_UTILS_DIR}\*.*"
     
